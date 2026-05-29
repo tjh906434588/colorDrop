@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ColorDrop - 用户获取颜色</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              300: '#93c5fd',
+              400: '#60a5fa',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            },
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    /* 色轮选择器自定义样式 */
+    input[type='color'] {
+      -webkit-appearance: none;
+      appearance: none;
+      border: none;
+      cursor: pointer;
+      background: transparent;
+    }
+    input[type='color']::-webkit-color-swatch-wrapper {
+      padding: 0;
+    }
+    input[type='color']::-webkit-color-swatch {
+      border: none;
+      border-radius: 0.75rem;
+    }
+    input[type='color']::-moz-color-swatch {
+      border: none;
+      border-radius: 0.75rem;
+    }
+
+    /* 复制成功提示动画 */
+    @keyframes slideUp {
+      from { opacity: 0; transform: translate(-50%, 12px); }
+      to   { opacity: 1; transform: translate(-50%, 0); }
+    }
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to   { opacity: 0; }
+    }
+    .toast-show {
+      animation: slideUp 0.3s ease forwards;
+    }
+    .toast-hide {
+      animation: fadeOut 0.3s ease forwards;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gray-100 text-gray-800 antialiased">
+
+  <!-- 页面头部 -->
+  <header class="bg-white border-b border-gray-200 shadow-sm">
+    <div class="max-w-3xl mx-auto px-4 py-5 sm:px-6">
+      <h1 class="text-2xl sm:text-3xl font-bold text-brand-600 tracking-tight">ColorDrop</h1>
+      <p class="mt-1 text-sm text-gray-500">轻松获取、预览与复制颜色值</p>
+    </div>
+  </header>
+
+  <main class="max-w-3xl mx-auto px-4 py-6 sm:px-6 sm:py-10 space-y-6">
+
+    <!-- 颜色预览卡片 -->
+    <section class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+      <div
+        id="colorPreview"
+        class="h-40 sm:h-52 w-full transition-colors duration-300 ease-in-out"
+        style="background-color: #3b82f6;"
+        aria-label="当前颜色预览"
+      ></div>
+      <div class="px-5 py-4 sm:px-6 flex items-center justify-between">
+        <span class="text-sm text-gray-500">实时预览</span>
+        <span id="previewLabel" class="text-lg font-mono font-semibold text-gray-700">#3B82F6</span>
+      </div>
+    </section>
+
+    <!-- 选色控制卡片 -->
+    <section class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 sm:p-6 space-y-6">
+
+      <!-- 色轮选色 -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-3">色轮选色</label>
+        <div class="flex items-center gap-4">
+          <input
+            type="color"
+            id="colorPicker"
+            value="#3b82f6"
+            class="w-20 h-20 sm:w-24 sm:h-24 rounded-xl shadow-inner cursor-pointer"
+            title="打开色轮选择器"
+          />
+          <p class="text-sm text-gray-500 leading-relaxed">
+            点击色块打开系统色轮，<br class="hidden sm:inline" />拖动即可实时更新预览。
+          </p>
+        </div>
+      </div>
+
+      <!-- HEX 手动输入 -->
+      <div>
+        <label for="hexInput" class="block text-sm font-medium text-gray-700 mb-2">手动输入 HEX</label>
+        <div class="flex gap-3">
+          <input
+            type="text"
+            id="hexInput"
+            value="#3B82F6"
+            maxlength="7"
+            placeholder="#FF5500"
+            class="flex-1 px-4 py-2.5 rounded-xl border border-gray-300 font-mono text-sm
+                   focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-400
+                   transition-shadow duration-200"
+          />
+          <button
+            id="applyHexBtn"
+            class="px-5 py-2.5 bg-brand-500 hover:bg-brand-600 active:bg-brand-700
+                   text-white text-sm font-medium rounded-xl
+                   transition-colors duration-200 shadow-sm"
+          >
+            应用
+          </button>
+        </div>
+        <p id="hexError" class="mt-1.5 text-xs text-red-500 hidden">请输入有效的 HEX 颜色值，如 #FF5500</p>
+      </div>
+
+      <!-- 预设色板 -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-3">预设色板</label>
+        <div id="presetPalette" class="grid grid-cols-6 sm:grid-cols-11 gap-2.5 sm:gap-3">
+          <!-- 由 JS 动态生成 -->
+        </div>
+      </div>
+
+      <!-- 随机颜色 -->
+      <div class="pt-1">
+        <button
+          id="randomBtn"
+          class="w-full sm:w-auto px-6 py-2.5 bg-white border border-brand-300 text-brand-600
+                 hover:bg-brand-50 hover:border-brand-400 active:bg-brand-100
+                 text-sm font-medium rounded-xl transition-all duration-200"
+        >
+          🎲 随机颜色
+        </button>
+      </div>
+    </section>
+
+    <!-- 颜色信息 & 复制卡片 -->
+    <section class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 sm:p-6">
+      <h2 class="text-sm font-medium text-gray-700 mb-4">颜色信息</h2>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <!-- HEX -->
+        <div class="flex items-center justify-between bg-gray-50 rounded-xl px-4 py-3 border border-gray-200">
+          <div>
+            <p class="text-xs text-gray-400 uppercase tracking-wide mb-0.5">HEX</p>
+            <p id="hexDisplay" class="font-mono text-base font-semibold text-gray-800">#3B82F6</p>
+          </div>
+          <button
+            id="copyHexBtn"
+            class="ml-3 shrink-0 px-3 py-1.5 bg-brand-500 hover:bg-brand-600 active:bg-brand-700
+                   text-white text-xs font-medium rounded-lg transition-colors duration-200"
+            title="复制 HEX 到剪贴板"
+          >
+            复制
+          </button>
+        </div>
+
+        <!-- RGB -->
+        <div class="flex items-center bg-gray-50 rounded-xl px-4 py-3 border border-gray-200">
+          <div>
+            <p class="text-xs text-gray-400 uppercase tracking-wide mb-0.5">RGB</p>
+            <p id="rgbDisplay" class="font-mono text-base font-semibold text-gray-800">rgb(59, 130, 246)</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="text-center text-xs text-gray-400 py-6">
+    ColorDrop &copy; 2026
+  </footer>
+
+  <!-- 复制成功 Toast 提示 -->
+  <div
+    id="toast"
+    class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 hidden
+           bg-gray-800 text-white text-sm px-5 py-2.5 rounded-full shadow-lg
+           pointer-events-none select-none"
+    role="status"
+    aria-live="polite"
+  >
+    ✓ 已复制到剪贴板
+  </div>
+
+  <script>
+    /* ============================================================
+     * ColorDrop - 颜色获取工具
+     * 功能：色轮选色、HEX 输入、预设色板、随机颜色、复制 HEX
+     * ============================================================ */
+
+    // ---------- 预设色板数据 ----------
+    const PRESET_COLORS = [
+      { name: '红',   hex: '#EF4444' },
+      { name: '橙',   hex: '#F97316' },
+      { name: '黄',   hex: '#EAB308' },
+      { name: '绿',   hex: '#22C55E' },
+      { name: '青',   hex: '#06B6D4' },
+      { name: '蓝',   hex: '#3B82F6' },
+      { name: '紫',   hex: '#A855F7' },
+      { name: '黑',   hex: '#000000' },
+      { name: '白',   hex: '#FFFFFF' },
+      { name: '灰',   hex: '#9CA3AF' },
+    ];
+
+    // ---------- DOM 元素引用 ----------
+    const els = {
+      preview:      document.getElementById('colorPreview'),
+      previewLabel: document.getElementById('previewLabel'),
+      picker:       document.getElementById('colorPicker'),
+      hexInput:     document.getElementById('hexInput'),
+      applyHexBtn:  document.getElementById('applyHexBtn'),
+      hexError:     document.getElementById('hexError'),
+      hexDisplay:   document.getElementById('hexDisplay'),
+      rgbDisplay:   document.getElementById('rgbDisplay'),
+      copyHexBtn:   document.getElementById('copyHexBtn'),
+      randomBtn:    document.getElementById('randomBtn'),
+      presetPalette:document.getElementById('presetPalette'),
+      toast:        document.getElementById('toast'),
+    };
+
+    // 当前颜色状态（统一大写 HEX）
+    let currentColor = '#3B82F6';
+
+    // Toast 定时器
+    let toastTimer = null;
+
+    // ---------- 工具函数 ----------
+
+    /** 校验 HEX 格式（#RGB 或 #RRGGBB） */
+    function isValidHex(hex) {
+      return /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(hex);
+    }
+
+    /** 将 #RGB 扩展为 #RRGGBB */
+    function expandHex(hex) {
+      if (hex.length === 4) {
+        return '#' + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];
+      }
+      return hex;
+    }
+
+    /** HEX 转 RGB 对象 */
+    function hexToRgb(hex) {
+      const h = expandHex(hex).slice(1);
+      return {
+        r: parseInt(h.slice(0, 2), 16),
+        g: parseInt(h.slice(2, 4), 16),
+        b: parseInt(h.slice(4, 6), 16),
+      };
+    }
+
+    /** HEX 转 RGB 字符串 */
+    function hexToRgbString(hex) {
+      const { r, g, b } = hexToRgb(hex);
+      return `rgb(${r}, ${g}, ${b})`;
+    }
+
+    /** 生成随机 HEX 颜色 */
+    function randomHex() {
+      const n = Math.floor(Math.random() * 0xffffff);
+      return '#' + n.toString(16).padStart(6, '0').toUpperCase();
+    }
+
+    /** 根据背景色亮度决定文字颜色（深/浅） */
+    function getContrastColor(hex) {
+      const { r, g, b } = hexToRgb(hex);
+      const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+      return luminance > 0.55 ? '#374151' : '#F9FAFB';
+    }
+
+    // ---------- 核心：更新所有 UI ----------
+
+    /**
+     * 设置当前颜色并同步所有控件
+     * @param {string} hex - 有效的 #RRGGBB 格式颜色
+     */
+    function setColor(hex) {
+      const normalized = expandHex(hex).toUpperCase();
+      currentColor = normalized;
+
+      // 预览区域
+      els.preview.style.backgroundColor = normalized;
+      els.previewLabel.textContent = normalized;
+      els.previewLabel.style.color = getContrastColor(normalized);
+
+      // 色轮选择器（需要小写）
+      els.picker.value = normalized.toLowerCase();
+
+      // HEX 输入框
+      els.hexInput.value = normalized;
+      els.hexError.classList.add('hidden');
+
+      // 颜色信息
+      els.hexDisplay.textContent = normalized;
+      els.rgbDisplay.textContent = hexToRgbString(normalized);
+
+      // 高亮当前预设色
+      highlightPreset(normalized);
+    }
+
+    /** 高亮匹配的预设色按钮 */
+    function highlightPreset(hex) {
+      els.presetPalette.querySelectorAll('[data-hex]').forEach(btn => {
+        const match = btn.dataset.hex.toUpperCase() === hex.toUpperCase();
+        btn.classList.toggle('ring-2', match);
+        btn.classList.toggle('ring-brand-500', match);
+        btn.classList.toggle('ring-offset-2', match);
+        btn.classList.toggle('scale-110', match);
+      });
+    }
+
+    // ---------- Toast 提示 ----------
+
+    function showToast(message = '✓ 已复制到剪贴板') {
+      els.toast.textContent = message;
+      els.toast.classList.remove('hidden', 'toast-hide');
+      els.toast.classList.add('toast-show');
+
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        els.toast.classList.remove('toast-show');
+        els.toast.classList.add('toast-hide');
+        setTimeout(() => els.toast.classList.add('hidden'), 300);
+      }, 2000);
+    }
+
+    // ---------- 复制到剪贴板 ----------
+
+    async function copyHex() {
+      try {
+        await navigator.clipboard.writeText(currentColor);
+        showToast();
+      } catch {
+        // 降级方案：使用 execCommand
+        const ta = document.createElement('textarea');
+        ta.value = currentColor;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showToast();
+      }
+    }
+
+    // ---------- 初始化预设色板 ----------
+
+    function initPresetPalette() {
+      PRESET_COLORS.forEach(({ name, hex }) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.dataset.hex = hex;
+        btn.title = `${name} ${hex}`;
+        btn.setAttribute('aria-label', `${name} ${hex}`);
+        btn.className = [
+          'w-10 h-10 sm:w-11 sm:h-11 rounded-xl border border-gray-200',
+          'transition-all duration-200 hover:scale-105 hover:shadow-md',
+          'focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-1',
+        ].join(' ');
+        btn.style.backgroundColor = hex;
+
+        // 白色按钮加内阴影以便辨识
+        if (hex.toUpperCase() === '#FFFFFF') {
+          btn.style.boxShadow = 'inset 0 0 0 1px #e5e7eb';
+        }
+
+        btn.addEventListener('click', () => setColor(hex));
+        els.presetPalette.appendChild(btn);
+      });
+    }
+
+    // ---------- 事件绑定 ----------
+
+    function bindEvents() {
+      // 色轮实时选色
+      els.picker.addEventListener('input', (e) => {
+        setColor(e.target.value.toUpperCase());
+      });
+
+      // HEX 输入：回车或点击应用
+      function applyHexInput() {
+        const raw = els.hexInput.value.trim();
+        const hex = raw.startsWith('#') ? raw : '#' + raw;
+        if (isValidHex(hex)) {
+          setColor(hex);
+        } else {
+          els.hexError.classList.remove('hidden');
+        }
+      }
+
+      els.applyHexBtn.addEventListener('click', applyHexInput);
+      els.hexInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') applyHexInput();
+      });
+      els.hexInput.addEventListener('input', () => {
+        els.hexError.classList.add('hidden');
+      });
+
+      // 随机颜色
+      els.randomBtn.addEventListener('click', () => {
+        setColor(randomHex());
+      });
+
+      // 复制 HEX
+      els.copyHexBtn.addEventListener('click', copyHex);
+
+      // 点击预览区域也可复制
+      els.preview.addEventListener('click', copyHex);
+      els.preview.style.cursor = 'pointer';
+      els.preview.title = '点击复制 HEX';
+    }
+
+    // ---------- 启动 ----------
+
+    function init() {
+      initPresetPalette();
+      bindEvents();
+      setColor(currentColor);
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
