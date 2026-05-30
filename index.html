@@ -76,6 +76,23 @@
     [dir="rtl"] .hex-row { flex-direction: row-reverse; }
     [dir="rtl"] .preview-footer { flex-direction: row-reverse; }
     [dir="rtl"] .hex-info-row { flex-direction: row-reverse; }
+    [dir="rtl"] .feedback-form .form-row { text-align: right; }
+
+    .form-input {
+      width: 100%;
+      padding: 0.625rem 1rem;
+      border-radius: 0.75rem;
+      border: 1px solid #d1d5db;
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+      transition: box-shadow 0.2s, border-color 0.2s;
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: #60a5fa;
+      box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.45);
+    }
+    .form-textarea { resize: vertical; min-height: 6rem; max-height: 12rem; }
   </style>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-H826M6T4XV"></script>
@@ -216,6 +233,70 @@
       </div>
     </section>
 
+    <!-- Netlify 反馈表单 -->
+    <section class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 sm:p-6">
+      <div class="max-w-lg mx-auto text-center mb-5 sm:mb-6">
+        <h2 data-i18n="feedbackTitle" class="text-sm font-medium text-gray-700 i18n-ellipsis"></h2>
+        <p data-i18n="feedbackSubtitle" class="mt-1.5 text-xs sm:text-sm text-gray-500 leading-relaxed"></p>
+      </div>
+
+      <form
+        name="feedback"
+        method="POST"
+        data-netlify="true"
+        netlify-honeypot="bot-field"
+        class="feedback-form max-w-lg mx-auto space-y-4"
+      >
+        <input type="hidden" name="form-name" value="feedback" />
+        <input name="bot-field" style="display:none" tabindex="-1" autocomplete="off" />
+
+        <div class="form-row">
+          <label for="feedbackName" data-i18n="feedbackNameLabel" class="block text-sm font-medium text-gray-700 mb-2 i18n-ellipsis text-start"></label>
+          <input
+            type="text"
+            id="feedbackName"
+            name="name"
+            required
+            class="form-input"
+          />
+        </div>
+
+        <div class="form-row">
+          <label for="feedbackEmail" data-i18n="feedbackEmailLabel" class="block text-sm font-medium text-gray-700 mb-2 i18n-ellipsis text-start"></label>
+          <input
+            type="email"
+            id="feedbackEmail"
+            name="email"
+            class="form-input"
+          />
+        </div>
+
+        <div class="form-row">
+          <label for="feedbackMessage" data-i18n="feedbackMessageLabel" class="block text-sm font-medium text-gray-700 mb-2 i18n-ellipsis text-start"></label>
+          <textarea
+            id="feedbackMessage"
+            name="message"
+            rows="4"
+            required
+            data-i18n-placeholder="feedbackMessagePlaceholder"
+            class="form-input form-textarea"
+          ></textarea>
+        </div>
+
+        <div class="pt-1 text-center">
+          <button
+            type="submit"
+            data-i18n="feedbackSubmitBtn"
+            class="w-full sm:w-auto sm:min-w-[10rem] sm:max-w-full h-[2.625rem] px-8
+                   bg-brand-500 hover:bg-brand-600 active:bg-brand-700
+                   text-white text-sm font-medium rounded-xl
+                   transition-colors duration-200 shadow-sm
+                   i18n-ellipsis overflow-hidden"
+          ></button>
+        </div>
+      </form>
+    </section>
+
   </main>
 
   <footer class="text-center text-xs text-gray-400 py-6">
@@ -283,6 +364,13 @@
           colorRed: 'Red', colorOrange: 'Orange', colorYellow: 'Yellow',
           colorGreen: 'Green', colorCyan: 'Cyan', colorBlue: 'Blue',
           colorPurple: 'Purple', colorBlack: 'Black', colorWhite: 'White', colorGray: 'Gray',
+          feedbackTitle: 'Feedback',
+          feedbackSubtitle: 'Tell us what you think — we read every message.',
+          feedbackNameLabel: 'Your name',
+          feedbackEmailLabel: 'Email (optional)',
+          feedbackMessageLabel: 'Your feedback',
+          feedbackMessagePlaceholder: 'How is the color picker? Any suggestions?',
+          feedbackSubmitBtn: 'Submit feedback',
         },
       },
       'zh-CN': {
@@ -310,6 +398,13 @@
           colorRed: '红', colorOrange: '橙', colorYellow: '黄',
           colorGreen: '绿', colorCyan: '青', colorBlue: '蓝',
           colorPurple: '紫', colorBlack: '黑', colorWhite: '白', colorGray: '灰',
+          feedbackTitle: '用户反馈',
+          feedbackSubtitle: '欢迎留下您的意见，我们会认真阅读。',
+          feedbackNameLabel: '你的名字',
+          feedbackEmailLabel: '邮箱（选填）',
+          feedbackMessageLabel: '你的建议或反馈',
+          feedbackMessagePlaceholder: '取色器好用吗？有什么建议？',
+          feedbackSubmitBtn: '提交反馈',
         },
       },
       'zh-TW': {
@@ -337,6 +432,13 @@
           colorRed: '紅', colorOrange: '橙', colorYellow: '黃',
           colorGreen: '綠', colorCyan: '青', colorBlue: '藍',
           colorPurple: '紫', colorBlack: '黑', colorWhite: '白', colorGray: '灰',
+          feedbackTitle: '用戶回饋',
+          feedbackSubtitle: '歡迎留下您的意見，我們會認真閱讀。',
+          feedbackNameLabel: '你的名字',
+          feedbackEmailLabel: '信箱（選填）',
+          feedbackMessageLabel: '你的建議或回饋',
+          feedbackMessagePlaceholder: '取色器好用嗎？有什麼建議？',
+          feedbackSubmitBtn: '提交回饋',
         },
       },
       'ja': {
@@ -364,6 +466,13 @@
           colorRed: '赤', colorOrange: '橙', colorYellow: '黄',
           colorGreen: '緑', colorCyan: 'シアン', colorBlue: '青',
           colorPurple: '紫', colorBlack: '黒', colorWhite: '白', colorGray: '灰',
+          feedbackTitle: 'フィードバック',
+          feedbackSubtitle: 'ご意見をお聞かせください。すべて確認します。',
+          feedbackNameLabel: 'お名前',
+          feedbackEmailLabel: 'メール（任意）',
+          feedbackMessageLabel: 'ご意見・フィードバック',
+          feedbackMessagePlaceholder: 'カラーピッカーは使いやすいですか？ご提案は？',
+          feedbackSubmitBtn: 'フィードバックを送信',
         },
       },
       'ko': {
@@ -391,6 +500,13 @@
           colorRed: '빨강', colorOrange: '주황', colorYellow: '노랑',
           colorGreen: '초록', colorCyan: '청록', colorBlue: '파랑',
           colorPurple: '보라', colorBlack: '검정', colorWhite: '흰색', colorGray: '회색',
+          feedbackTitle: '피드백',
+          feedbackSubtitle: '의견을 남겨 주세요. 모든 메시지를 확인합니다.',
+          feedbackNameLabel: '이름',
+          feedbackEmailLabel: '이메일 (선택)',
+          feedbackMessageLabel: '의견 또는 피드백',
+          feedbackMessagePlaceholder: '색상 선택기가 마음에 드시나요? 제안이 있으신가요?',
+          feedbackSubmitBtn: '피드백 제출',
         },
       },
       'fr': {
@@ -418,6 +534,13 @@
           colorRed: 'Rouge', colorOrange: 'Orange', colorYellow: 'Jaune',
           colorGreen: 'Vert', colorCyan: 'Cyan', colorBlue: 'Bleu',
           colorPurple: 'Violet', colorBlack: 'Noir', colorWhite: 'Blanc', colorGray: 'Gris',
+          feedbackTitle: 'Commentaires',
+          feedbackSubtitle: 'Dites-nous ce que vous pensez — nous lisons chaque message.',
+          feedbackNameLabel: 'Votre nom',
+          feedbackEmailLabel: 'E-mail (facultatif)',
+          feedbackMessageLabel: 'Vos commentaires',
+          feedbackMessagePlaceholder: 'Le sélecteur de couleurs vous convient-il ? Des suggestions ?',
+          feedbackSubmitBtn: 'Envoyer',
         },
       },
       'de': {
@@ -445,6 +568,13 @@
           colorRed: 'Rot', colorOrange: 'Orange', colorYellow: 'Gelb',
           colorGreen: 'Grün', colorCyan: 'Cyan', colorBlue: 'Blau',
           colorPurple: 'Lila', colorBlack: 'Schwarz', colorWhite: 'Weiß', colorGray: 'Grau',
+          feedbackTitle: 'Feedback',
+          feedbackSubtitle: 'Teilen Sie uns Ihre Meinung mit — wir lesen jede Nachricht.',
+          feedbackNameLabel: 'Ihr Name',
+          feedbackEmailLabel: 'E-Mail (optional)',
+          feedbackMessageLabel: 'Ihr Feedback',
+          feedbackMessagePlaceholder: 'Wie gefällt Ihnen der Farbwähler? Vorschläge?',
+          feedbackSubmitBtn: 'Feedback senden',
         },
       },
       'es': {
@@ -472,6 +602,13 @@
           colorRed: 'Rojo', colorOrange: 'Naranja', colorYellow: 'Amarillo',
           colorGreen: 'Verde', colorCyan: 'Cian', colorBlue: 'Azul',
           colorPurple: 'Morado', colorBlack: 'Negro', colorWhite: 'Blanco', colorGray: 'Gris',
+          feedbackTitle: 'Comentarios',
+          feedbackSubtitle: 'Cuéntanos qué piensas — leemos cada mensaje.',
+          feedbackNameLabel: 'Tu nombre',
+          feedbackEmailLabel: 'Correo (opcional)',
+          feedbackMessageLabel: 'Tus comentarios',
+          feedbackMessagePlaceholder: '¿Te gusta el selector de color? ¿Alguna sugerencia?',
+          feedbackSubmitBtn: 'Enviar comentarios',
         },
       },
       'pt': {
@@ -499,6 +636,13 @@
           colorRed: 'Vermelho', colorOrange: 'Laranja', colorYellow: 'Amarelo',
           colorGreen: 'Verde', colorCyan: 'Ciano', colorBlue: 'Azul',
           colorPurple: 'Roxo', colorBlack: 'Preto', colorWhite: 'Branco', colorGray: 'Cinza',
+          feedbackTitle: 'Feedback',
+          feedbackSubtitle: 'Conte-nos o que acha — lemos cada mensagem.',
+          feedbackNameLabel: 'Seu nome',
+          feedbackEmailLabel: 'E-mail (opcional)',
+          feedbackMessageLabel: 'Seu feedback',
+          feedbackMessagePlaceholder: 'O seletor de cores é útil? Alguma sugestão?',
+          feedbackSubmitBtn: 'Enviar feedback',
         },
       },
       'ru': {
@@ -526,6 +670,13 @@
           colorRed: 'Красный', colorOrange: 'Оранжевый', colorYellow: 'Жёлтый',
           colorGreen: 'Зелёный', colorCyan: 'Голубой', colorBlue: 'Синий',
           colorPurple: 'Фиолетовый', colorBlack: 'Чёрный', colorWhite: 'Белый', colorGray: 'Серый',
+          feedbackTitle: 'Обратная связь',
+          feedbackSubtitle: 'Расскажите, что думаете — мы читаем каждое сообщение.',
+          feedbackNameLabel: 'Ваше имя',
+          feedbackEmailLabel: 'Email (необязательно)',
+          feedbackMessageLabel: 'Ваш отзыв',
+          feedbackMessagePlaceholder: 'Нравится ли выбор цвета? Есть предложения?',
+          feedbackSubmitBtn: 'Отправить отзыв',
         },
       },
       'ar': {
@@ -553,6 +704,13 @@
           colorRed: 'أحمر', colorOrange: 'برتقالي', colorYellow: 'أصفر',
           colorGreen: 'أخضر', colorCyan: 'سماوي', colorBlue: 'أزرق',
           colorPurple: 'بنفسجي', colorBlack: 'أسود', colorWhite: 'أبيض', colorGray: 'رمادي',
+          feedbackTitle: 'ملاحظات',
+          feedbackSubtitle: 'أخبرنا برأيك — نقرأ كل رسالة.',
+          feedbackNameLabel: 'اسمك',
+          feedbackEmailLabel: 'البريد الإلكتروني (اختياري)',
+          feedbackMessageLabel: 'ملاحظاتك',
+          feedbackMessagePlaceholder: 'هل أداة اختيار الألوان مفيدة؟ أي اقتراحات؟',
+          feedbackSubmitBtn: 'إرسال الملاحظات',
         },
       },
       'hi': {
@@ -580,6 +738,13 @@
           colorRed: 'लाल', colorOrange: 'नारंगी', colorYellow: 'पीला',
           colorGreen: 'हरा', colorCyan: 'सियान', colorBlue: 'नीला',
           colorPurple: 'बैंगनी', colorBlack: 'काला', colorWhite: 'सफेद', colorGray: 'धूसर',
+          feedbackTitle: 'प्रतिक्रिया',
+          feedbackSubtitle: 'हमें बताएं — हम हर संदेश पढ़ते हैं।',
+          feedbackNameLabel: 'आपका नाम',
+          feedbackEmailLabel: 'ईमेल (वैकल्पिक)',
+          feedbackMessageLabel: 'आपकी प्रतिक्रिया',
+          feedbackMessagePlaceholder: 'कलर पिकर कैसा है? कोई सुझाव?',
+          feedbackSubmitBtn: 'प्रतिक्रिया भेजें',
         },
       },
       'it': {
@@ -607,6 +772,13 @@
           colorRed: 'Rosso', colorOrange: 'Arancione', colorYellow: 'Giallo',
           colorGreen: 'Verde', colorCyan: 'Ciano', colorBlue: 'Blu',
           colorPurple: 'Viola', colorBlack: 'Nero', colorWhite: 'Bianco', colorGray: 'Grigio',
+          feedbackTitle: 'Feedback',
+          feedbackSubtitle: 'Dicci cosa ne pensi — leggiamo ogni messaggio.',
+          feedbackNameLabel: 'Il tuo nome',
+          feedbackEmailLabel: 'Email (facoltativa)',
+          feedbackMessageLabel: 'Il tuo feedback',
+          feedbackMessagePlaceholder: 'Ti piace il selettore colori? Suggerimenti?',
+          feedbackSubmitBtn: 'Invia feedback',
         },
       },
       'nl': {
@@ -634,6 +806,13 @@
           colorRed: 'Rood', colorOrange: 'Oranje', colorYellow: 'Geel',
           colorGreen: 'Groen', colorCyan: 'Cyaan', colorBlue: 'Blauw',
           colorPurple: 'Paars', colorBlack: 'Zwart', colorWhite: 'Wit', colorGray: 'Grijs',
+          feedbackTitle: 'Feedback',
+          feedbackSubtitle: 'Laat weten wat je denkt — we lezen elk bericht.',
+          feedbackNameLabel: 'Je naam',
+          feedbackEmailLabel: 'E-mail (optioneel)',
+          feedbackMessageLabel: 'Je feedback',
+          feedbackMessagePlaceholder: 'Bevalt de kleurenkiezer? Suggesties?',
+          feedbackSubmitBtn: 'Feedback verzenden',
         },
       },
       'tr': {
@@ -661,6 +840,13 @@
           colorRed: 'Kırmızı', colorOrange: 'Turuncu', colorYellow: 'Sarı',
           colorGreen: 'Yeşil', colorCyan: 'Camgöbeği', colorBlue: 'Mavi',
           colorPurple: 'Mor', colorBlack: 'Siyah', colorWhite: 'Beyaz', colorGray: 'Gri',
+          feedbackTitle: 'Geri bildirim',
+          feedbackSubtitle: 'Düşüncelerinizi paylaşın — her mesajı okuyoruz.',
+          feedbackNameLabel: 'Adınız',
+          feedbackEmailLabel: 'E-posta (isteğe bağlı)',
+          feedbackMessageLabel: 'Geri bildiriminiz',
+          feedbackMessagePlaceholder: 'Renk seçici işinize yarıyor mu? Önerileriniz?',
+          feedbackSubmitBtn: 'Geri bildirim gönder',
         },
       },
       'th': {
@@ -688,6 +874,13 @@
           colorRed: 'แดง', colorOrange: 'ส้ม', colorYellow: 'เหลือง',
           colorGreen: 'เขียว', colorCyan: 'ฟ้า', colorBlue: 'น้ำเงิน',
           colorPurple: 'ม่วง', colorBlack: 'ดำ', colorWhite: 'ขาว', colorGray: 'เทา',
+          feedbackTitle: 'ข้อเสนอแนะ',
+          feedbackSubtitle: 'บอกเราว่าคุณคิดอย่างไร — เราอ่านทุกข้อความ',
+          feedbackNameLabel: 'ชื่อของคุณ',
+          feedbackEmailLabel: 'อีเมล (ไม่บังคับ)',
+          feedbackMessageLabel: 'ข้อเสนอแนะของคุณ',
+          feedbackMessagePlaceholder: 'เครื่องมือเลือกสีใช้งานดีไหม? มีข้อเสนอแนะไหม?',
+          feedbackSubmitBtn: 'ส่งข้อเสนอแนะ',
         },
       },
       'vi': {
@@ -715,6 +908,13 @@
           colorRed: 'Đỏ', colorOrange: 'Cam', colorYellow: 'Vàng',
           colorGreen: 'Xanh lá', colorCyan: 'Xanh lơ', colorBlue: 'Xanh dương',
           colorPurple: 'Tím', colorBlack: 'Đen', colorWhite: 'Trắng', colorGray: 'Xám',
+          feedbackTitle: 'Phản hồi',
+          feedbackSubtitle: 'Cho chúng tôi biết ý kiến — chúng tôi đọc mọi tin nhắn.',
+          feedbackNameLabel: 'Tên của bạn',
+          feedbackEmailLabel: 'Email (tùy chọn)',
+          feedbackMessageLabel: 'Phản hồi của bạn',
+          feedbackMessagePlaceholder: 'Công cụ chọn màu có hữu ích không? Góp ý nào không?',
+          feedbackSubmitBtn: 'Gửi phản hồi',
         },
       },
       'id': {
@@ -742,6 +942,13 @@
           colorRed: 'Merah', colorOrange: 'Oranye', colorYellow: 'Kuning',
           colorGreen: 'Hijau', colorCyan: 'Sian', colorBlue: 'Biru',
           colorPurple: 'Ungu', colorBlack: 'Hitam', colorWhite: 'Putih', colorGray: 'Abu-abu',
+          feedbackTitle: 'Masukan',
+          feedbackSubtitle: 'Beritahu kami pendapat Anda — kami membaca setiap pesan.',
+          feedbackNameLabel: 'Nama Anda',
+          feedbackEmailLabel: 'Email (opsional)',
+          feedbackMessageLabel: 'Masukan Anda',
+          feedbackMessagePlaceholder: 'Apakah pemilih warna berguna? Ada saran?',
+          feedbackSubmitBtn: 'Kirim masukan',
         },
       },
     };
@@ -849,6 +1056,11 @@
       if (els.copyHexBtn.dataset.i18nTitle) {
         els.copyHexBtn.title = t(els.copyHexBtn.dataset.i18nTitle);
       }
+
+      // placeholder 翻译
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        el.placeholder = t(el.dataset.i18nPlaceholder);
+      });
 
       els.picker.title = t('colorPickerTitle');
       els.preview.title = t('previewCopyTitle');
