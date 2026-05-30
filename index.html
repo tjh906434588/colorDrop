@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ColorDrop - 用户获取颜色</title>
+  <title>ColorDrop</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -28,7 +28,6 @@
     };
   </script>
   <style>
-    /* 色轮选择器自定义样式 */
     input[type='color'] {
       -webkit-appearance: none;
       appearance: none;
@@ -36,19 +35,10 @@
       cursor: pointer;
       background: transparent;
     }
-    input[type='color']::-webkit-color-swatch-wrapper {
-      padding: 0;
-    }
-    input[type='color']::-webkit-color-swatch {
-      border: none;
-      border-radius: 0.75rem;
-    }
-    input[type='color']::-moz-color-swatch {
-      border: none;
-      border-radius: 0.75rem;
-    }
+    input[type='color']::-webkit-color-swatch-wrapper { padding: 0; }
+    input[type='color']::-webkit-color-swatch { border: none; border-radius: 0.75rem; }
+    input[type='color']::-moz-color-swatch { border: none; border-radius: 0.75rem; }
 
-    /* 复制成功提示动画 */
     @keyframes slideUp {
       from { opacity: 0; transform: translate(-50%, 12px); }
       to   { opacity: 1; transform: translate(-50%, 0); }
@@ -57,12 +47,35 @@
       from { opacity: 1; }
       to   { opacity: 0; }
     }
-    .toast-show {
-      animation: slideUp 0.3s ease forwards;
+    .toast-show { animation: slideUp 0.3s ease forwards; }
+    .toast-hide { animation: fadeOut 0.3s ease forwards; }
+
+    /* i18n: 固定控件尺寸，文字溢出省略，不破坏布局 */
+    .i18n-ellipsis {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 100%;
     }
-    .toast-hide {
-      animation: fadeOut 0.3s ease forwards;
+    .i18n-btn-fixed {
+      flex-shrink: 0;
+      min-width: 4.75rem;
+      max-width: 7.5rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
+    .i18n-hint-box {
+      min-height: 2.75rem;
+      line-height: 1.5;
+    }
+    #langSelect {
+      text-overflow: ellipsis;
+    }
+    [dir="rtl"] .header-inner { flex-direction: row-reverse; }
+    [dir="rtl"] .hex-row { flex-direction: row-reverse; }
+    [dir="rtl"] .preview-footer { flex-direction: row-reverse; }
+    [dir="rtl"] .hex-info-row { flex-direction: row-reverse; }
   </style>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-H826M6T4XV"></script>
@@ -70,129 +83,134 @@
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
     gtag('config', 'G-H826M6T4XV');
   </script>
 </head>
 <body class="min-h-screen bg-gray-100 text-gray-800 antialiased">
 
-  <!-- 页面头部 -->
   <header class="bg-white border-b border-gray-200 shadow-sm">
-    <div class="max-w-3xl mx-auto px-4 py-5 sm:px-6">
-      <h1 class="text-2xl sm:text-3xl font-bold text-brand-600 tracking-tight">ColorDrop</h1>
-      <p class="mt-1 text-sm text-gray-500">轻松获取、预览与复制颜色值</p>
+    <div class="max-w-3xl mx-auto px-4 py-5 sm:px-6 header-inner flex items-start justify-between gap-3">
+      <div class="min-w-0 flex-1 pr-2">
+        <h1 class="text-2xl sm:text-3xl font-bold text-brand-600 tracking-tight truncate">ColorDrop</h1>
+        <p data-i18n="tagline" class="mt-1 text-sm text-gray-500 i18n-ellipsis"></p>
+      </div>
+      <div class="shrink-0 pt-0.5">
+        <label for="langSelect" class="sr-only" data-i18n="langLabel"></label>
+        <select
+          id="langSelect"
+          class="w-[7.25rem] sm:w-[8.5rem] h-9 pl-2.5 pr-7 text-xs sm:text-sm rounded-xl
+                 border border-gray-300 bg-white text-gray-700
+                 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-400
+                 transition-shadow duration-200 cursor-pointer appearance-none
+                 bg-[length:1rem] bg-[right_0.4rem_center] bg-no-repeat"
+          style="background-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E\")"
+          aria-label="Language"
+        ></select>
+      </div>
     </div>
   </header>
 
   <main class="max-w-3xl mx-auto px-4 py-6 sm:px-6 sm:py-10 space-y-6">
 
-    <!-- 颜色预览卡片 -->
     <section class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
       <div
         id="colorPreview"
         class="h-40 sm:h-52 w-full transition-colors duration-300 ease-in-out"
         style="background-color: #3b82f6;"
-        aria-label="当前颜色预览"
+        data-i18n-attr="aria-label"
+        data-i18n="colorPreviewAria"
       ></div>
-      <div class="px-5 py-4 sm:px-6 flex items-center justify-between">
-        <span class="text-sm text-gray-500">实时预览</span>
-        <span id="previewLabel" class="text-lg font-mono font-semibold text-gray-700">#3B82F6</span>
+      <div class="px-5 py-4 sm:px-6 preview-footer flex items-center justify-between gap-2">
+        <span data-i18n="livePreview" class="text-sm text-gray-500 i18n-ellipsis shrink min-w-0"></span>
+        <span id="previewLabel" class="text-lg font-mono font-semibold text-gray-700 shrink-0">#3B82F6</span>
       </div>
     </section>
 
-    <!-- 选色控制卡片 -->
     <section class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 sm:p-6 space-y-6">
 
-      <!-- 色轮选色 -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-3">色轮选色</label>
+        <label class="block text-sm font-medium text-gray-700 mb-3 i18n-ellipsis" data-i18n="colorWheelLabel"></label>
         <div class="flex items-center gap-4">
           <input
             type="color"
             id="colorPicker"
             value="#3b82f6"
-            class="w-20 h-20 sm:w-24 sm:h-24 rounded-xl shadow-inner cursor-pointer"
-            title="打开色轮选择器"
+            class="w-20 h-20 sm:w-24 sm:h-24 rounded-xl shadow-inner cursor-pointer shrink-0"
+            data-i18n-attr="title"
+            data-i18n="colorPickerTitle"
           />
-          <p class="text-sm text-gray-500 leading-relaxed">
-            点击色块打开系统色轮，<br class="hidden sm:inline" />拖动即可实时更新预览。
-          </p>
+          <p
+            class="text-sm text-gray-500 leading-relaxed i18n-hint-box min-w-0 flex-1"
+            data-i18n="colorWheelHint"
+            data-i18n-html="true"
+          ></p>
         </div>
       </div>
 
-      <!-- HEX 手动输入 -->
       <div>
-        <label for="hexInput" class="block text-sm font-medium text-gray-700 mb-2">手动输入 HEX</label>
-        <div class="flex gap-3">
+        <label for="hexInput" class="block text-sm font-medium text-gray-700 mb-2 i18n-ellipsis" data-i18n="hexInputLabel"></label>
+        <div class="hex-row flex gap-3">
           <input
             type="text"
             id="hexInput"
             value="#3B82F6"
             maxlength="7"
             placeholder="#FF5500"
-            class="flex-1 px-4 py-2.5 rounded-xl border border-gray-300 font-mono text-sm
+            class="flex-1 min-w-0 px-4 py-2.5 rounded-xl border border-gray-300 font-mono text-sm
                    focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-400
                    transition-shadow duration-200"
           />
           <button
             id="applyHexBtn"
-            class="px-5 py-2.5 bg-brand-500 hover:bg-brand-600 active:bg-brand-700
+            data-i18n="applyBtn"
+            class="i18n-btn-fixed px-5 py-2.5 bg-brand-500 hover:bg-brand-600 active:bg-brand-700
                    text-white text-sm font-medium rounded-xl
                    transition-colors duration-200 shadow-sm"
-          >
-            应用
-          </button>
+          ></button>
         </div>
-        <p id="hexError" class="mt-1.5 text-xs text-red-500 hidden">请输入有效的 HEX 颜色值，如 #FF5500</p>
+        <p id="hexError" data-i18n="hexError" class="mt-1.5 text-xs text-red-500 hidden i18n-ellipsis"></p>
       </div>
 
-      <!-- 预设色板 -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-3">预设色板</label>
-        <div id="presetPalette" class="grid grid-cols-6 sm:grid-cols-11 gap-2.5 sm:gap-3">
-          <!-- 由 JS 动态生成 -->
-        </div>
+        <label class="block text-sm font-medium text-gray-700 mb-3 i18n-ellipsis" data-i18n="presetPaletteLabel"></label>
+        <div id="presetPalette" class="grid grid-cols-6 sm:grid-cols-11 gap-2.5 sm:gap-3"></div>
       </div>
 
-      <!-- 随机颜色 -->
       <div class="pt-1">
         <button
           id="randomBtn"
-          class="w-full sm:w-auto px-6 py-2.5 bg-white border border-brand-300 text-brand-600
+          data-i18n="randomColor"
+          class="w-full sm:w-auto sm:min-w-[10rem] sm:max-w-[16rem] h-[2.625rem] px-6
+                 bg-white border border-brand-300 text-brand-600
                  hover:bg-brand-50 hover:border-brand-400 active:bg-brand-100
-                 text-sm font-medium rounded-xl transition-all duration-200"
-        >
-          🎲 随机颜色
-        </button>
+                 text-sm font-medium rounded-xl transition-all duration-200
+                 i18n-ellipsis overflow-hidden"
+        ></button>
       </div>
     </section>
 
-    <!-- 颜色信息 & 复制卡片 -->
     <section class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 sm:p-6">
-      <h2 class="text-sm font-medium text-gray-700 mb-4">颜色信息</h2>
+      <h2 data-i18n="colorInfo" class="text-sm font-medium text-gray-700 mb-4 i18n-ellipsis"></h2>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <!-- HEX -->
-        <div class="flex items-center justify-between bg-gray-50 rounded-xl px-4 py-3 border border-gray-200">
-          <div>
+        <div class="hex-info-row flex items-center justify-between gap-2 bg-gray-50 rounded-xl px-4 py-3 border border-gray-200 min-h-[3.75rem]">
+          <div class="min-w-0 flex-1">
             <p class="text-xs text-gray-400 uppercase tracking-wide mb-0.5">HEX</p>
-            <p id="hexDisplay" class="font-mono text-base font-semibold text-gray-800">#3B82F6</p>
+            <p id="hexDisplay" class="font-mono text-base font-semibold text-gray-800 truncate">#3B82F6</p>
           </div>
           <button
             id="copyHexBtn"
-            class="ml-3 shrink-0 px-3 py-1.5 bg-brand-500 hover:bg-brand-600 active:bg-brand-700
+            data-i18n="copyBtn"
+            data-i18n-title="copyHexTitle"
+            class="i18n-btn-fixed ml-1 px-3 py-1.5 bg-brand-500 hover:bg-brand-600 active:bg-brand-700
                    text-white text-xs font-medium rounded-lg transition-colors duration-200"
-            title="复制 HEX 到剪贴板"
-          >
-            复制
-          </button>
+          ></button>
         </div>
 
-        <!-- RGB -->
-        <div class="flex items-center bg-gray-50 rounded-xl px-4 py-3 border border-gray-200">
-          <div>
+        <div class="flex items-center bg-gray-50 rounded-xl px-4 py-3 border border-gray-200 min-h-[3.75rem]">
+          <div class="min-w-0 w-full">
             <p class="text-xs text-gray-400 uppercase tracking-wide mb-0.5">RGB</p>
-            <p id="rgbDisplay" class="font-mono text-base font-semibold text-gray-800">rgb(59, 130, 246)</p>
+            <p id="rgbDisplay" class="font-mono text-base font-semibold text-gray-800 truncate">rgb(59, 130, 246)</p>
           </div>
         </div>
       </div>
@@ -200,73 +218,662 @@
 
   </main>
 
-  <!-- 页脚 -->
   <footer class="text-center text-xs text-gray-400 py-6">
     ColorDrop &copy; 2026
   </footer>
 
-  <!-- 复制成功 Toast 提示 -->
   <div
     id="toast"
-    class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 hidden
+    data-i18n="toastCopied"
+    class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 hidden max-w-[90vw]
            bg-gray-800 text-white text-sm px-5 py-2.5 rounded-full shadow-lg
-           pointer-events-none select-none"
+           pointer-events-none select-none i18n-ellipsis whitespace-nowrap"
     role="status"
     aria-live="polite"
-  >
-    ✓ 已复制到剪贴板
-  </div>
+  ></div>
 
   <script>
     /* ============================================================
-     * ColorDrop - 颜色获取工具
-     * 功能：色轮选色、HEX 输入、预设色板、随机颜色、复制 HEX
+     * ColorDrop - 颜色获取工具 + i18n
      * ============================================================ */
 
-    // ---------- 预设色板数据 ----------
-    const PRESET_COLORS = [
-      { name: '红',   hex: '#EF4444' },
-      { name: '橙',   hex: '#F97316' },
-      { name: '黄',   hex: '#EAB308' },
-      { name: '绿',   hex: '#22C55E' },
-      { name: '青',   hex: '#06B6D4' },
-      { name: '蓝',   hex: '#3B82F6' },
-      { name: '紫',   hex: '#A855F7' },
-      { name: '黑',   hex: '#000000' },
-      { name: '白',   hex: '#FFFFFF' },
-      { name: '灰',   hex: '#9CA3AF' },
+    const STORAGE_KEY_LANG = 'colordrop-lang';
+
+    /** 预设色板（hex 固定，名称走 i18n） */
+    const PRESET_COLOR_KEYS = [
+      { key: 'colorRed',    hex: '#EF4444' },
+      { key: 'colorOrange', hex: '#F97316' },
+      { key: 'colorYellow', hex: '#EAB308' },
+      { key: 'colorGreen',  hex: '#22C55E' },
+      { key: 'colorCyan',   hex: '#06B6D4' },
+      { key: 'colorBlue',   hex: '#3B82F6' },
+      { key: 'colorPurple', hex: '#A855F7' },
+      { key: 'colorBlack',  hex: '#000000' },
+      { key: 'colorWhite',  hex: '#FFFFFF' },
+      { key: 'colorGray',   hex: '#9CA3AF' },
     ];
 
-    // ---------- DOM 元素引用 ----------
-    const els = {
-      preview:      document.getElementById('colorPreview'),
-      previewLabel: document.getElementById('previewLabel'),
-      picker:       document.getElementById('colorPicker'),
-      hexInput:     document.getElementById('hexInput'),
-      applyHexBtn:  document.getElementById('applyHexBtn'),
-      hexError:     document.getElementById('hexError'),
-      hexDisplay:   document.getElementById('hexDisplay'),
-      rgbDisplay:   document.getElementById('rgbDisplay'),
-      copyHexBtn:   document.getElementById('copyHexBtn'),
-      randomBtn:    document.getElementById('randomBtn'),
-      presetPalette:document.getElementById('presetPalette'),
-      toast:        document.getElementById('toast'),
+    /**
+     * 可扩展语言包配置
+     * 新增语言：复制 en 结构，填入 strings，在下方注册即可
+     */
+    const I18N_LOCALES = {
+      'en': {
+        label: 'English',
+        dir: 'ltr',
+        strings: {
+          pageTitle: 'ColorDrop - Color Picker',
+          tagline: 'Get, preview and copy colors easily',
+          langLabel: 'Language',
+          livePreview: 'Live preview',
+          colorPreviewAria: 'Current color preview',
+          colorWheelLabel: 'Color wheel',
+          colorPickerTitle: 'Open color picker',
+          colorWheelHint: 'Click the swatch to open the system color wheel,<br class="hidden sm:inline" /> drag to update preview in real time.',
+          hexInputLabel: 'Enter HEX manually',
+          applyBtn: 'Apply',
+          hexError: 'Enter a valid HEX color, e.g. #FF5500',
+          presetPaletteLabel: 'Preset palette',
+          randomColor: '🎲 Random color',
+          colorInfo: 'Color info',
+          copyBtn: 'Copy',
+          copyHexTitle: 'Copy HEX to clipboard',
+          previewCopyTitle: 'Click to copy HEX',
+          toastCopied: '✓ Copied to clipboard',
+          colorRed: 'Red', colorOrange: 'Orange', colorYellow: 'Yellow',
+          colorGreen: 'Green', colorCyan: 'Cyan', colorBlue: 'Blue',
+          colorPurple: 'Purple', colorBlack: 'Black', colorWhite: 'White', colorGray: 'Gray',
+        },
+      },
+      'zh-CN': {
+        label: '简体中文',
+        dir: 'ltr',
+        strings: {
+          pageTitle: 'ColorDrop - 用户获取颜色',
+          tagline: '轻松获取、预览与复制颜色值',
+          langLabel: '语言',
+          livePreview: '实时预览',
+          colorPreviewAria: '当前颜色预览',
+          colorWheelLabel: '色轮选色',
+          colorPickerTitle: '打开色轮选择器',
+          colorWheelHint: '点击色块打开系统色轮，<br class="hidden sm:inline" />拖动即可实时更新预览。',
+          hexInputLabel: '手动输入 HEX',
+          applyBtn: '应用',
+          hexError: '请输入有效的 HEX 颜色值，如 #FF5500',
+          presetPaletteLabel: '预设色板',
+          randomColor: '🎲 随机颜色',
+          colorInfo: '颜色信息',
+          copyBtn: '复制',
+          copyHexTitle: '复制 HEX 到剪贴板',
+          previewCopyTitle: '点击复制 HEX',
+          toastCopied: '✓ 已复制到剪贴板',
+          colorRed: '红', colorOrange: '橙', colorYellow: '黄',
+          colorGreen: '绿', colorCyan: '青', colorBlue: '蓝',
+          colorPurple: '紫', colorBlack: '黑', colorWhite: '白', colorGray: '灰',
+        },
+      },
+      'zh-TW': {
+        label: '繁體中文',
+        dir: 'ltr',
+        strings: {
+          pageTitle: 'ColorDrop - 用戶獲取顏色',
+          tagline: '輕鬆獲取、預覽與複製顏色值',
+          langLabel: '語言',
+          livePreview: '即時預覽',
+          colorPreviewAria: '目前顏色預覽',
+          colorWheelLabel: '色輪選色',
+          colorPickerTitle: '開啟色輪選擇器',
+          colorWheelHint: '點擊色塊開啟系統色輪，<br class="hidden sm:inline" />拖動即可即時更新預覽。',
+          hexInputLabel: '手動輸入 HEX',
+          applyBtn: '套用',
+          hexError: '請輸入有效的 HEX 顏色值，如 #FF5500',
+          presetPaletteLabel: '預設色板',
+          randomColor: '🎲 隨機顏色',
+          colorInfo: '顏色資訊',
+          copyBtn: '複製',
+          copyHexTitle: '複製 HEX 到剪貼簿',
+          previewCopyTitle: '點擊複製 HEX',
+          toastCopied: '✓ 已複製到剪貼簿',
+          colorRed: '紅', colorOrange: '橙', colorYellow: '黃',
+          colorGreen: '綠', colorCyan: '青', colorBlue: '藍',
+          colorPurple: '紫', colorBlack: '黑', colorWhite: '白', colorGray: '灰',
+        },
+      },
+      'ja': {
+        label: '日本語',
+        dir: 'ltr',
+        strings: {
+          pageTitle: 'ColorDrop - カラーピッカー',
+          tagline: '色の取得・プレビュー・コピーが簡単',
+          langLabel: '言語',
+          livePreview: 'ライブプレビュー',
+          colorPreviewAria: '現在の色プレビュー',
+          colorWheelLabel: 'カラーホイール',
+          colorPickerTitle: 'カラーピッカーを開く',
+          colorWheelHint: 'スウォッチをクリックしてシステムの色選択を開き、<br class="hidden sm:inline" />ドラッグでプレビューを更新します。',
+          hexInputLabel: 'HEX を手入力',
+          applyBtn: '適用',
+          hexError: '有効な HEX 色を入力してください（例: #FF5500）',
+          presetPaletteLabel: 'プリセット',
+          randomColor: '🎲 ランダム',
+          colorInfo: '色情報',
+          copyBtn: 'コピー',
+          copyHexTitle: 'HEX をクリップボードにコピー',
+          previewCopyTitle: 'クリックで HEX をコピー',
+          toastCopied: '✓ コピーしました',
+          colorRed: '赤', colorOrange: '橙', colorYellow: '黄',
+          colorGreen: '緑', colorCyan: 'シアン', colorBlue: '青',
+          colorPurple: '紫', colorBlack: '黒', colorWhite: '白', colorGray: '灰',
+        },
+      },
+      'ko': {
+        label: '한국어',
+        dir: 'ltr',
+        strings: {
+          pageTitle: 'ColorDrop - 색상 선택기',
+          tagline: '색상 가져오기, 미리보기 및 복사',
+          langLabel: '언어',
+          livePreview: '실시간 미리보기',
+          colorPreviewAria: '현재 색상 미리보기',
+          colorWheelLabel: '색상환',
+          colorPickerTitle: '색상 선택기 열기',
+          colorWheelHint: '색상 견본을 클릭하여 시스템 색상환을 열고,<br class="hidden sm:inline" /> 드래그하여 미리보기를 업데이트합니다.',
+          hexInputLabel: 'HEX 수동 입력',
+          applyBtn: '적용',
+          hexError: '유효한 HEX 색상을 입력하세요. 예: #FF5500',
+          presetPaletteLabel: '프리셋 팔레트',
+          randomColor: '🎲 랜덤 색상',
+          colorInfo: '색상 정보',
+          copyBtn: '복사',
+          copyHexTitle: 'HEX를 클립보드에 복사',
+          previewCopyTitle: '클릭하여 HEX 복사',
+          toastCopied: '✓ 클립보드에 복사됨',
+          colorRed: '빨강', colorOrange: '주황', colorYellow: '노랑',
+          colorGreen: '초록', colorCyan: '청록', colorBlue: '파랑',
+          colorPurple: '보라', colorBlack: '검정', colorWhite: '흰색', colorGray: '회색',
+        },
+      },
+      'fr': {
+        label: 'Français',
+        dir: 'ltr',
+        strings: {
+          pageTitle: 'ColorDrop - Sélecteur de couleurs',
+          tagline: 'Obtenir, prévisualiser et copier les couleurs',
+          langLabel: 'Langue',
+          livePreview: 'Aperçu en direct',
+          colorPreviewAria: 'Aperçu de la couleur actuelle',
+          colorWheelLabel: 'Roue chromatique',
+          colorPickerTitle: 'Ouvrir le sélecteur',
+          colorWheelHint: 'Cliquez sur l\'échantillon pour ouvrir la roue système,<br class="hidden sm:inline" /> faites glisser pour mettre à jour l\'aperçu.',
+          hexInputLabel: 'Saisir HEX manuellement',
+          applyBtn: 'Appliquer',
+          hexError: 'Entrez une couleur HEX valide, ex. #FF5500',
+          presetPaletteLabel: 'Palette prédéfinie',
+          randomColor: '🎲 Couleur aléatoire',
+          colorInfo: 'Infos couleur',
+          copyBtn: 'Copier',
+          copyHexTitle: 'Copier HEX dans le presse-papiers',
+          previewCopyTitle: 'Cliquer pour copier HEX',
+          toastCopied: '✓ Copié dans le presse-papiers',
+          colorRed: 'Rouge', colorOrange: 'Orange', colorYellow: 'Jaune',
+          colorGreen: 'Vert', colorCyan: 'Cyan', colorBlue: 'Bleu',
+          colorPurple: 'Violet', colorBlack: 'Noir', colorWhite: 'Blanc', colorGray: 'Gris',
+        },
+      },
+      'de': {
+        label: 'Deutsch',
+        dir: 'ltr',
+        strings: {
+          pageTitle: 'ColorDrop - Farbauswahl',
+          tagline: 'Farben abrufen, anzeigen und kopieren',
+          langLabel: 'Sprache',
+          livePreview: 'Live-Vorschau',
+          colorPreviewAria: 'Aktuelle Farbvorschau',
+          colorWheelLabel: 'Farbrad',
+          colorPickerTitle: 'Farbauswahl öffnen',
+          colorWheelHint: 'Klicken Sie auf die Farbfläche für das System-Farbrad,<br class="hidden sm:inline" /> ziehen Sie zum Aktualisieren der Vorschau.',
+          hexInputLabel: 'HEX manuell eingeben',
+          applyBtn: 'Anwenden',
+          hexError: 'Gültige HEX-Farbe eingeben, z.B. #FF5500',
+          presetPaletteLabel: 'Farbpalette',
+          randomColor: '🎲 Zufallsfarbe',
+          colorInfo: 'Farbinformation',
+          copyBtn: 'Kopieren',
+          copyHexTitle: 'HEX in Zwischenablage kopieren',
+          previewCopyTitle: 'Klicken zum Kopieren von HEX',
+          toastCopied: '✓ In Zwischenablage kopiert',
+          colorRed: 'Rot', colorOrange: 'Orange', colorYellow: 'Gelb',
+          colorGreen: 'Grün', colorCyan: 'Cyan', colorBlue: 'Blau',
+          colorPurple: 'Lila', colorBlack: 'Schwarz', colorWhite: 'Weiß', colorGray: 'Grau',
+        },
+      },
+      'es': {
+        label: 'Español',
+        dir: 'ltr',
+        strings: {
+          pageTitle: 'ColorDrop - Selector de color',
+          tagline: 'Obtener, previsualizar y copiar colores',
+          langLabel: 'Idioma',
+          livePreview: 'Vista previa',
+          colorPreviewAria: 'Vista previa del color actual',
+          colorWheelLabel: 'Rueda de color',
+          colorPickerTitle: 'Abrir selector de color',
+          colorWheelHint: 'Haz clic en la muestra para abrir el selector del sistema,<br class="hidden sm:inline" /> arrastra para actualizar la vista previa.',
+          hexInputLabel: 'Introducir HEX manualmente',
+          applyBtn: 'Aplicar',
+          hexError: 'Introduce un color HEX válido, ej. #FF5500',
+          presetPaletteLabel: 'Paleta predefinida',
+          randomColor: '🎲 Color aleatorio',
+          colorInfo: 'Información del color',
+          copyBtn: 'Copiar',
+          copyHexTitle: 'Copiar HEX al portapapeles',
+          previewCopyTitle: 'Clic para copiar HEX',
+          toastCopied: '✓ Copiado al portapapeles',
+          colorRed: 'Rojo', colorOrange: 'Naranja', colorYellow: 'Amarillo',
+          colorGreen: 'Verde', colorCyan: 'Cian', colorBlue: 'Azul',
+          colorPurple: 'Morado', colorBlack: 'Negro', colorWhite: 'Blanco', colorGray: 'Gris',
+        },
+      },
+      'pt': {
+        label: 'Português',
+        dir: 'ltr',
+        strings: {
+          pageTitle: 'ColorDrop - Seletor de cores',
+          tagline: 'Obter, visualizar e copiar cores',
+          langLabel: 'Idioma',
+          livePreview: 'Pré-visualização',
+          colorPreviewAria: 'Pré-visualização da cor atual',
+          colorWheelLabel: 'Roda de cores',
+          colorPickerTitle: 'Abrir seletor de cores',
+          colorWheelHint: 'Clique na amostra para abrir o seletor do sistema,<br class="hidden sm:inline" /> arraste para atualizar a pré-visualização.',
+          hexInputLabel: 'Inserir HEX manualmente',
+          applyBtn: 'Aplicar',
+          hexError: 'Insira uma cor HEX válida, ex. #FF5500',
+          presetPaletteLabel: 'Paleta predefinida',
+          randomColor: '🎲 Cor aleatória',
+          colorInfo: 'Informação da cor',
+          copyBtn: 'Copiar',
+          copyHexTitle: 'Copiar HEX para a área de transferência',
+          previewCopyTitle: 'Clique para copiar HEX',
+          toastCopied: '✓ Copiado para a área de transferência',
+          colorRed: 'Vermelho', colorOrange: 'Laranja', colorYellow: 'Amarelo',
+          colorGreen: 'Verde', colorCyan: 'Ciano', colorBlue: 'Azul',
+          colorPurple: 'Roxo', colorBlack: 'Preto', colorWhite: 'Branco', colorGray: 'Cinza',
+        },
+      },
+      'ru': {
+        label: 'Русский',
+        dir: 'ltr',
+        strings: {
+          pageTitle: 'ColorDrop - Выбор цвета',
+          tagline: 'Получение, предпросмотр и копирование цветов',
+          langLabel: 'Язык',
+          livePreview: 'Предпросмотр',
+          colorPreviewAria: 'Предпросмотр текущего цвета',
+          colorWheelLabel: 'Цветовой круг',
+          colorPickerTitle: 'Открыть выбор цвета',
+          colorWheelHint: 'Нажмите на образец, чтобы открыть системный выбор,<br class="hidden sm:inline" /> перетаскивайте для обновления предпросмотра.',
+          hexInputLabel: 'Ввести HEX вручную',
+          applyBtn: 'Применить',
+          hexError: 'Введите корректный HEX, напр. #FF5500',
+          presetPaletteLabel: 'Палитра',
+          randomColor: '🎲 Случайный цвет',
+          colorInfo: 'Информация о цвете',
+          copyBtn: 'Копировать',
+          copyHexTitle: 'Копировать HEX в буфер',
+          previewCopyTitle: 'Нажмите, чтобы скопировать HEX',
+          toastCopied: '✓ Скопировано в буфер',
+          colorRed: 'Красный', colorOrange: 'Оранжевый', colorYellow: 'Жёлтый',
+          colorGreen: 'Зелёный', colorCyan: 'Голубой', colorBlue: 'Синий',
+          colorPurple: 'Фиолетовый', colorBlack: 'Чёрный', colorWhite: 'Белый', colorGray: 'Серый',
+        },
+      },
+      'ar': {
+        label: 'العربية',
+        dir: 'rtl',
+        strings: {
+          pageTitle: 'ColorDrop - منتقي الألوان',
+          tagline: 'احصل على الألوان واعرضها وانسخها بسهولة',
+          langLabel: 'اللغة',
+          livePreview: 'معاينة مباشرة',
+          colorPreviewAria: 'معاينة اللون الحالي',
+          colorWheelLabel: 'عجلة الألوان',
+          colorPickerTitle: 'فتح منتقي الألوان',
+          colorWheelHint: 'انقر على العينة لفتح منتقي النظام،<br class="hidden sm:inline" /> اسحب لتحديث المعاينة.',
+          hexInputLabel: 'إدخال HEX يدوياً',
+          applyBtn: 'تطبيق',
+          hexError: 'أدخل لون HEX صالحاً، مثل #FF5500',
+          presetPaletteLabel: 'لوحة الألوان',
+          randomColor: '🎲 لون عشوائي',
+          colorInfo: 'معلومات اللون',
+          copyBtn: 'نسخ',
+          copyHexTitle: 'نسخ HEX إلى الحافظة',
+          previewCopyTitle: 'انقر لنسخ HEX',
+          toastCopied: '✓ تم النسخ إلى الحافظة',
+          colorRed: 'أحمر', colorOrange: 'برتقالي', colorYellow: 'أصفر',
+          colorGreen: 'أخضر', colorCyan: 'سماوي', colorBlue: 'أزرق',
+          colorPurple: 'بنفسجي', colorBlack: 'أسود', colorWhite: 'أبيض', colorGray: 'رمادي',
+        },
+      },
+      'hi': {
+        label: 'हिन्दी',
+        dir: 'ltr',
+        strings: {
+          pageTitle: 'ColorDrop - रंग चयनकर्ता',
+          tagline: 'रंग प्राप्त करें, पूर्वावलोकन और कॉपी करें',
+          langLabel: 'भाषा',
+          livePreview: 'लाइव पूर्वावलोकन',
+          colorPreviewAria: 'वर्तमान रंग पूर्वावलोकन',
+          colorWheelLabel: 'रंग चक्र',
+          colorPickerTitle: 'रंग चयनकर्ता खोलें',
+          colorWheelHint: 'सिस्टम रंग चक्र खोलने के लिए स्वैच पर क्लिक करें,<br class="hidden sm:inline" /> पूर्वावलोकन अपडेट करने के लिए खींचें।',
+          hexInputLabel: 'HEX मैन्युअल दर्ज करें',
+          applyBtn: 'लागू',
+          hexError: 'मान्य HEX रंग दर्ज करें, जैसे #FF5500',
+          presetPaletteLabel: 'प्रीसेट पैलेट',
+          randomColor: '🎲 यादृच्छिक रंग',
+          colorInfo: 'रंग जानकारी',
+          copyBtn: 'कॉपी',
+          copyHexTitle: 'HEX क्लिपबोर्ड पर कॉपी करें',
+          previewCopyTitle: 'HEX कॉपी करने के लिए क्लिक करें',
+          toastCopied: '✓ क्लिपबोर्ड पर कॉपी हो गया',
+          colorRed: 'लाल', colorOrange: 'नारंगी', colorYellow: 'पीला',
+          colorGreen: 'हरा', colorCyan: 'सियान', colorBlue: 'नीला',
+          colorPurple: 'बैंगनी', colorBlack: 'काला', colorWhite: 'सफेद', colorGray: 'धूसर',
+        },
+      },
+      'it': {
+        label: 'Italiano',
+        dir: 'ltr',
+        strings: {
+          pageTitle: 'ColorDrop - Selettore colore',
+          tagline: 'Ottieni, anteprima e copia i colori',
+          langLabel: 'Lingua',
+          livePreview: 'Anteprima live',
+          colorPreviewAria: 'Anteprima colore attuale',
+          colorWheelLabel: 'Ruota colori',
+          colorPickerTitle: 'Apri selettore colore',
+          colorWheelHint: 'Clicca sul campione per aprire il selettore di sistema,<br class="hidden sm:inline" /> trascina per aggiornare l\'anteprima.',
+          hexInputLabel: 'Inserisci HEX manualmente',
+          applyBtn: 'Applica',
+          hexError: 'Inserisci un colore HEX valido, es. #FF5500',
+          presetPaletteLabel: 'Tavolozza preset',
+          randomColor: '🎲 Colore casuale',
+          colorInfo: 'Info colore',
+          copyBtn: 'Copia',
+          copyHexTitle: 'Copia HEX negli appunti',
+          previewCopyTitle: 'Clicca per copiare HEX',
+          toastCopied: '✓ Copiato negli appunti',
+          colorRed: 'Rosso', colorOrange: 'Arancione', colorYellow: 'Giallo',
+          colorGreen: 'Verde', colorCyan: 'Ciano', colorBlue: 'Blu',
+          colorPurple: 'Viola', colorBlack: 'Nero', colorWhite: 'Bianco', colorGray: 'Grigio',
+        },
+      },
+      'nl': {
+        label: 'Nederlands',
+        dir: 'ltr',
+        strings: {
+          pageTitle: 'ColorDrop - Kleurenkiezer',
+          tagline: 'Kleuren ophalen, bekijken en kopiëren',
+          langLabel: 'Taal',
+          livePreview: 'Live voorbeeld',
+          colorPreviewAria: 'Huidige kleurvoorbeeld',
+          colorWheelLabel: 'Kleurenwiel',
+          colorPickerTitle: 'Kleurkiezer openen',
+          colorWheelHint: 'Klik op het staal voor het systeemkleurenwiel,<br class="hidden sm:inline" /> sleep om het voorbeeld bij te werken.',
+          hexInputLabel: 'HEX handmatig invoeren',
+          applyBtn: 'Toepassen',
+          hexError: 'Voer een geldige HEX-kleur in, bijv. #FF5500',
+          presetPaletteLabel: 'Voorinstellingen',
+          randomColor: '🎲 Willekeurige kleur',
+          colorInfo: 'Kleurinfo',
+          copyBtn: 'Kopiëren',
+          copyHexTitle: 'HEX naar klembord kopiëren',
+          previewCopyTitle: 'Klik om HEX te kopiëren',
+          toastCopied: '✓ Gekopieerd naar klembord',
+          colorRed: 'Rood', colorOrange: 'Oranje', colorYellow: 'Geel',
+          colorGreen: 'Groen', colorCyan: 'Cyaan', colorBlue: 'Blauw',
+          colorPurple: 'Paars', colorBlack: 'Zwart', colorWhite: 'Wit', colorGray: 'Grijs',
+        },
+      },
+      'tr': {
+        label: 'Türkçe',
+        dir: 'ltr',
+        strings: {
+          pageTitle: 'ColorDrop - Renk Seçici',
+          tagline: 'Renkleri alın, önizleyin ve kopyalayın',
+          langLabel: 'Dil',
+          livePreview: 'Canlı önizleme',
+          colorPreviewAria: 'Geçerli renk önizlemesi',
+          colorWheelLabel: 'Renk çarkı',
+          colorPickerTitle: 'Renk seçiciyi aç',
+          colorWheelHint: 'Sistem renk çarkını açmak için örneğe tıklayın,<br class="hidden sm:inline" /> önizlemeyi güncellemek için sürükleyin.',
+          hexInputLabel: 'HEX manuel gir',
+          applyBtn: 'Uygula',
+          hexError: 'Geçerli bir HEX rengi girin, örn. #FF5500',
+          presetPaletteLabel: 'Hazır palet',
+          randomColor: '🎲 Rastgele renk',
+          colorInfo: 'Renk bilgisi',
+          copyBtn: 'Kopyala',
+          copyHexTitle: 'HEX\'i panoya kopyala',
+          previewCopyTitle: 'HEX kopyalamak için tıkla',
+          toastCopied: '✓ Panoya kopyalandı',
+          colorRed: 'Kırmızı', colorOrange: 'Turuncu', colorYellow: 'Sarı',
+          colorGreen: 'Yeşil', colorCyan: 'Camgöbeği', colorBlue: 'Mavi',
+          colorPurple: 'Mor', colorBlack: 'Siyah', colorWhite: 'Beyaz', colorGray: 'Gri',
+        },
+      },
+      'th': {
+        label: 'ไทย',
+        dir: 'ltr',
+        strings: {
+          pageTitle: 'ColorDrop - เลือกสี',
+          tagline: 'รับ แสดงตัวอย่าง และคัดลอกสี',
+          langLabel: 'ภาษา',
+          livePreview: 'ตัวอย่างสด',
+          colorPreviewAria: 'ตัวอย่างสีปัจจุบัน',
+          colorWheelLabel: 'วงล้อสี',
+          colorPickerTitle: 'เปิดตัวเลือกสี',
+          colorWheelHint: 'คลิกตัวอย่างเพื่อเปิดวงล้อสีของระบบ<br class="hidden sm:inline" /> ลากเพื่ออัปเดตตัวอย่าง',
+          hexInputLabel: 'ป้อน HEX เอง',
+          applyBtn: 'ใช้',
+          hexError: 'ป้อนสี HEX ที่ถูกต้อง เช่น #FF5500',
+          presetPaletteLabel: 'จานสีสำเร็จ',
+          randomColor: '🎲 สุ่มสี',
+          colorInfo: 'ข้อมูลสี',
+          copyBtn: 'คัดลอก',
+          copyHexTitle: 'คัดลอก HEX ไปคลิปบอร์ด',
+          previewCopyTitle: 'คลิกเพื่อคัดลอก HEX',
+          toastCopied: '✓ คัดลอกแล้ว',
+          colorRed: 'แดง', colorOrange: 'ส้ม', colorYellow: 'เหลือง',
+          colorGreen: 'เขียว', colorCyan: 'ฟ้า', colorBlue: 'น้ำเงิน',
+          colorPurple: 'ม่วง', colorBlack: 'ดำ', colorWhite: 'ขาว', colorGray: 'เทา',
+        },
+      },
+      'vi': {
+        label: 'Tiếng Việt',
+        dir: 'ltr',
+        strings: {
+          pageTitle: 'ColorDrop - Chọn màu',
+          tagline: 'Lấy, xem trước và sao chép màu',
+          langLabel: 'Ngôn ngữ',
+          livePreview: 'Xem trước trực tiếp',
+          colorPreviewAria: 'Xem trước màu hiện tại',
+          colorWheelLabel: 'Bảng màu',
+          colorPickerTitle: 'Mở bộ chọn màu',
+          colorWheelHint: 'Nhấp vào mẫu để mở bộ chọn hệ thống,<br class="hidden sm:inline" /> kéo để cập nhật xem trước.',
+          hexInputLabel: 'Nhập HEX thủ công',
+          applyBtn: 'Áp dụng',
+          hexError: 'Nhập màu HEX hợp lệ, vd. #FF5500',
+          presetPaletteLabel: 'Bảng màu có sẵn',
+          randomColor: '🎲 Màu ngẫu nhiên',
+          colorInfo: 'Thông tin màu',
+          copyBtn: 'Sao chép',
+          copyHexTitle: 'Sao chép HEX vào clipboard',
+          previewCopyTitle: 'Nhấp để sao chép HEX',
+          toastCopied: '✓ Đã sao chép',
+          colorRed: 'Đỏ', colorOrange: 'Cam', colorYellow: 'Vàng',
+          colorGreen: 'Xanh lá', colorCyan: 'Xanh lơ', colorBlue: 'Xanh dương',
+          colorPurple: 'Tím', colorBlack: 'Đen', colorWhite: 'Trắng', colorGray: 'Xám',
+        },
+      },
+      'id': {
+        label: 'Bahasa Indonesia',
+        dir: 'ltr',
+        strings: {
+          pageTitle: 'ColorDrop - Pemilih Warna',
+          tagline: 'Dapatkan, pratinjau, dan salin warna',
+          langLabel: 'Bahasa',
+          livePreview: 'Pratinjau langsung',
+          colorPreviewAria: 'Pratinjau warna saat ini',
+          colorWheelLabel: 'Roda warna',
+          colorPickerTitle: 'Buka pemilih warna',
+          colorWheelHint: 'Klik swatch untuk membuka roda warna sistem,<br class="hidden sm:inline" /> seret untuk memperbarui pratinjau.',
+          hexInputLabel: 'Masukkan HEX manual',
+          applyBtn: 'Terapkan',
+          hexError: 'Masukkan warna HEX valid, mis. #FF5500',
+          presetPaletteLabel: 'Palet preset',
+          randomColor: '🎲 Warna acak',
+          colorInfo: 'Info warna',
+          copyBtn: 'Salin',
+          copyHexTitle: 'Salin HEX ke clipboard',
+          previewCopyTitle: 'Klik untuk menyalin HEX',
+          toastCopied: '✓ Disalin ke clipboard',
+          colorRed: 'Merah', colorOrange: 'Oranye', colorYellow: 'Kuning',
+          colorGreen: 'Hijau', colorCyan: 'Sian', colorBlue: 'Biru',
+          colorPurple: 'Ungu', colorBlack: 'Hitam', colorWhite: 'Putih', colorGray: 'Abu-abu',
+        },
+      },
     };
 
-    // 当前颜色状态（统一大写 HEX）
+    const DEFAULT_LOCALE = 'en';
+    let currentLocale = DEFAULT_LOCALE;
     let currentColor = '#3B82F6';
-
-    // Toast 定时器
     let toastTimer = null;
 
-    // ---------- 工具函数 ----------
+    const els = {
+      preview:       document.getElementById('colorPreview'),
+      previewLabel:  document.getElementById('previewLabel'),
+      picker:        document.getElementById('colorPicker'),
+      hexInput:      document.getElementById('hexInput'),
+      applyHexBtn:   document.getElementById('applyHexBtn'),
+      hexError:      document.getElementById('hexError'),
+      hexDisplay:    document.getElementById('hexDisplay'),
+      rgbDisplay:    document.getElementById('rgbDisplay'),
+      copyHexBtn:    document.getElementById('copyHexBtn'),
+      randomBtn:     document.getElementById('randomBtn'),
+      presetPalette: document.getElementById('presetPalette'),
+      toast:         document.getElementById('toast'),
+      langSelect:    document.getElementById('langSelect'),
+    };
 
-    /** 校验 HEX 格式（#RGB 或 #RRGGBB） */
+    // ---------- i18n 核心 ----------
+
+    /** 取当前语言文案，缺失则回退英文 */
+    function t(key) {
+      const pack = I18N_LOCALES[currentLocale]?.strings;
+      const fallback = I18N_LOCALES[DEFAULT_LOCALE].strings;
+      return (pack && pack[key]) || fallback[key] || key;
+    }
+
+    /** 解析浏览器语言 → 已注册 locale */
+    function resolveLocale(code) {
+      if (!code) return DEFAULT_LOCALE;
+      const normalized = code.replace(/_/g, '-');
+      if (I18N_LOCALES[normalized]) return normalized;
+
+      const lower = normalized.toLowerCase();
+      if (lower === 'zh-tw' || lower === 'zh-hk' || lower === 'zh-hant') return 'zh-TW';
+      if (lower.startsWith('zh')) return 'zh-CN';
+
+      const base = lower.split('-')[0];
+      const match = Object.keys(I18N_LOCALES).find(
+        loc => loc === base || loc.toLowerCase() === base
+      );
+      return match || DEFAULT_LOCALE;
+    }
+
+    /** 检测初始语言：localStorage > 浏览器 > 英文 */
+    function detectInitialLocale() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY_LANG);
+        if (saved && I18N_LOCALES[saved]) return saved;
+      } catch (_) { /* ignore */ }
+
+      const candidates = navigator.languages?.length
+        ? navigator.languages
+        : [navigator.language || navigator.userLanguage || ''];
+
+      for (const lang of candidates) {
+        const resolved = resolveLocale(lang);
+        if (resolved) return resolved;
+      }
+      return DEFAULT_LOCALE;
+    }
+
+    /** 填充语言下拉框 */
+    function initLangSelect() {
+      els.langSelect.innerHTML = '';
+      Object.entries(I18N_LOCALES).forEach(([code, { label }]) => {
+        const opt = document.createElement('option');
+        opt.value = code;
+        opt.textContent = label;
+        els.langSelect.appendChild(opt);
+      });
+      els.langSelect.value = currentLocale;
+    }
+
+    /** 应用文案到所有 data-i18n 节点（不刷新页面） */
+    function applyI18n() {
+      const localeMeta = I18N_LOCALES[currentLocale] || I18N_LOCALES[DEFAULT_LOCALE];
+
+      document.documentElement.lang = currentLocale;
+      document.documentElement.dir = localeMeta.dir || 'ltr';
+      document.title = t('pageTitle');
+
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.dataset.i18n;
+        const value = t(key);
+        const attr = el.dataset.i18nAttr;
+
+        if (attr) {
+          el.setAttribute(attr, value);
+        } else if (el.dataset.i18nHtml === 'true') {
+          el.innerHTML = value;
+        } else {
+          el.textContent = value;
+        }
+      });
+
+      // copy 按钮 title 单独 key
+      if (els.copyHexBtn.dataset.i18nTitle) {
+        els.copyHexBtn.title = t(els.copyHexBtn.dataset.i18nTitle);
+      }
+
+      els.picker.title = t('colorPickerTitle');
+      els.preview.title = t('previewCopyTitle');
+      els.langSelect.setAttribute('aria-label', t('langLabel'));
+
+      updatePresetLabels();
+    }
+
+    /** 切换语言 */
+    function setLocale(locale) {
+      if (!I18N_LOCALES[locale]) return;
+      currentLocale = locale;
+      try {
+        localStorage.setItem(STORAGE_KEY_LANG, locale);
+      } catch (_) { /* ignore */ }
+      els.langSelect.value = locale;
+      applyI18n();
+    }
+
+    // ---------- 颜色工具（原有逻辑） ----------
+
     function isValidHex(hex) {
       return /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(hex);
     }
 
-    /** 将 #RGB 扩展为 #RRGGBB */
     function expandHex(hex) {
       if (hex.length === 4) {
         return '#' + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];
@@ -274,7 +881,6 @@
       return hex;
     }
 
-    /** HEX 转 RGB 对象 */
     function hexToRgb(hex) {
       const h = expandHex(hex).slice(1);
       return {
@@ -284,56 +890,40 @@
       };
     }
 
-    /** HEX 转 RGB 字符串 */
     function hexToRgbString(hex) {
       const { r, g, b } = hexToRgb(hex);
       return `rgb(${r}, ${g}, ${b})`;
     }
 
-    /** 生成随机 HEX 颜色 */
     function randomHex() {
       const n = Math.floor(Math.random() * 0xffffff);
       return '#' + n.toString(16).padStart(6, '0').toUpperCase();
     }
 
-    /** 根据背景色亮度决定文字颜色（深/浅） */
     function getContrastColor(hex) {
       const { r, g, b } = hexToRgb(hex);
       const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
       return luminance > 0.55 ? '#374151' : '#F9FAFB';
     }
 
-    // ---------- 核心：更新所有 UI ----------
-
-    /**
-     * 设置当前颜色并同步所有控件
-     * @param {string} hex - 有效的 #RRGGBB 格式颜色
-     */
     function setColor(hex) {
       const normalized = expandHex(hex).toUpperCase();
       currentColor = normalized;
 
-      // 预览区域
       els.preview.style.backgroundColor = normalized;
       els.previewLabel.textContent = normalized;
       els.previewLabel.style.color = getContrastColor(normalized);
 
-      // 色轮选择器（需要小写）
       els.picker.value = normalized.toLowerCase();
-
-      // HEX 输入框
       els.hexInput.value = normalized;
       els.hexError.classList.add('hidden');
 
-      // 颜色信息
       els.hexDisplay.textContent = normalized;
       els.rgbDisplay.textContent = hexToRgbString(normalized);
 
-      // 高亮当前预设色
       highlightPreset(normalized);
     }
 
-    /** 高亮匹配的预设色按钮 */
     function highlightPreset(hex) {
       els.presetPalette.querySelectorAll('[data-hex]').forEach(btn => {
         const match = btn.dataset.hex.toUpperCase() === hex.toUpperCase();
@@ -344,10 +934,8 @@
       });
     }
 
-    // ---------- Toast 提示 ----------
-
-    function showToast(message = '✓ 已复制到剪贴板') {
-      els.toast.textContent = message;
+    function showToast(message) {
+      els.toast.textContent = message || t('toastCopied');
       els.toast.classList.remove('hidden', 'toast-hide');
       els.toast.classList.add('toast-show');
 
@@ -359,14 +947,11 @@
       }, 2000);
     }
 
-    // ---------- 复制到剪贴板 ----------
-
     async function copyHex() {
       try {
         await navigator.clipboard.writeText(currentColor);
         showToast();
       } catch {
-        // 降级方案：使用 execCommand
         const ta = document.createElement('textarea');
         ta.value = currentColor;
         ta.style.position = 'fixed';
@@ -379,41 +964,43 @@
       }
     }
 
-    // ---------- 初始化预设色板 ----------
+    function updatePresetLabels() {
+      els.presetPalette.querySelectorAll('[data-color-key]').forEach(btn => {
+        const key = btn.dataset.colorKey;
+        const hex = btn.dataset.hex;
+        const name = t(key);
+        btn.title = `${name} ${hex}`;
+        btn.setAttribute('aria-label', `${name} ${hex}`);
+      });
+    }
 
     function initPresetPalette() {
-      PRESET_COLORS.forEach(({ name, hex }) => {
+      els.presetPalette.innerHTML = '';
+      PRESET_COLOR_KEYS.forEach(({ key, hex }) => {
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.dataset.hex = hex;
-        btn.title = `${name} ${hex}`;
-        btn.setAttribute('aria-label', `${name} ${hex}`);
+        btn.dataset.colorKey = key;
         btn.className = [
           'w-10 h-10 sm:w-11 sm:h-11 rounded-xl border border-gray-200',
           'transition-all duration-200 hover:scale-105 hover:shadow-md',
           'focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-1',
         ].join(' ');
         btn.style.backgroundColor = hex;
-
-        // 白色按钮加内阴影以便辨识
         if (hex.toUpperCase() === '#FFFFFF') {
           btn.style.boxShadow = 'inset 0 0 0 1px #e5e7eb';
         }
-
         btn.addEventListener('click', () => setColor(hex));
         els.presetPalette.appendChild(btn);
       });
+      updatePresetLabels();
     }
 
-    // ---------- 事件绑定 ----------
-
     function bindEvents() {
-      // 色轮实时选色
       els.picker.addEventListener('input', (e) => {
         setColor(e.target.value.toUpperCase());
       });
 
-      // HEX 输入：回车或点击应用
       function applyHexInput() {
         const raw = els.hexInput.value.trim();
         const hex = raw.startsWith('#') ? raw : '#' + raw;
@@ -432,25 +1019,22 @@
         els.hexError.classList.add('hidden');
       });
 
-      // 随机颜色
-      els.randomBtn.addEventListener('click', () => {
-        setColor(randomHex());
-      });
-
-      // 复制 HEX
+      els.randomBtn.addEventListener('click', () => setColor(randomHex()));
       els.copyHexBtn.addEventListener('click', copyHex);
-
-      // 点击预览区域也可复制
       els.preview.addEventListener('click', copyHex);
       els.preview.style.cursor = 'pointer';
-      els.preview.title = '点击复制 HEX';
+
+      els.langSelect.addEventListener('change', (e) => {
+        setLocale(e.target.value);
+      });
     }
 
-    // ---------- 启动 ----------
-
     function init() {
+      currentLocale = detectInitialLocale();
+      initLangSelect();
       initPresetPalette();
       bindEvents();
+      applyI18n();
       setColor(currentColor);
     }
 
