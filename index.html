@@ -93,6 +93,10 @@
       box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.45);
     }
     .form-textarea { resize: vertical; min-height: 6rem; max-height: 12rem; }
+
+    .accordion-icon { transition: transform 0.2s ease; }
+    .accordion-icon.is-open { transform: rotate(180deg); }
+    [dir="rtl"] .accordion-trigger { flex-direction: row-reverse; }
   </style>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-H826M6T4XV"></script>
@@ -299,8 +303,71 @@
 
   </main>
 
-  <footer class="text-center text-xs text-gray-400 py-6">
-    ColorDrop &copy; 2026
+  <!-- 页脚：关于我们 / 隐私政策 / 联系方式 -->
+  <footer class="max-w-3xl mx-auto px-4 pb-6 sm:px-6">
+    <section class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden" aria-label="Site information">
+      <div class="divide-y divide-gray-200">
+
+        <div class="footer-accordion-item">
+          <button
+            type="button"
+            class="accordion-trigger w-full flex items-center justify-between gap-3 px-5 py-4 sm:px-6
+                   text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-200 text-start"
+            aria-expanded="false"
+            aria-controls="panel-about"
+            id="trigger-about"
+          >
+            <span data-i18n="footerAboutTitle" class="i18n-ellipsis min-w-0"></span>
+            <svg class="accordion-icon w-5 h-5 text-gray-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div id="panel-about" class="accordion-panel hidden px-5 pb-4 sm:px-6 sm:pb-5" role="region" aria-labelledby="trigger-about">
+            <p data-i18n="footerAboutBody" class="text-sm text-gray-500 leading-relaxed"></p>
+          </div>
+        </div>
+
+        <div class="footer-accordion-item">
+          <button
+            type="button"
+            class="accordion-trigger w-full flex items-center justify-between gap-3 px-5 py-4 sm:px-6
+                   text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-200 text-start"
+            aria-expanded="false"
+            aria-controls="panel-privacy"
+            id="trigger-privacy"
+          >
+            <span data-i18n="footerPrivacyTitle" class="i18n-ellipsis min-w-0"></span>
+            <svg class="accordion-icon w-5 h-5 text-gray-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div id="panel-privacy" class="accordion-panel hidden px-5 pb-4 sm:px-6 sm:pb-5" role="region" aria-labelledby="trigger-privacy">
+            <p data-i18n="footerPrivacyBody" class="text-sm text-gray-500 leading-relaxed"></p>
+          </div>
+        </div>
+
+        <div class="footer-accordion-item">
+          <button
+            type="button"
+            class="accordion-trigger w-full flex items-center justify-between gap-3 px-5 py-4 sm:px-6
+                   text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-200 text-start"
+            aria-expanded="false"
+            aria-controls="panel-contact"
+            id="trigger-contact"
+          >
+            <span data-i18n="footerContactTitle" class="i18n-ellipsis min-w-0"></span>
+            <svg class="accordion-icon w-5 h-5 text-gray-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div id="panel-contact" class="accordion-panel hidden px-5 pb-4 sm:px-6 sm:pb-5" role="region" aria-labelledby="trigger-contact">
+            <p data-i18n="footerContactBody" data-i18n-html="true" class="text-sm text-gray-500 leading-relaxed"></p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+    <p class="text-center text-xs text-gray-400 py-6">ColorDrop &copy; 2026</p>
   </footer>
 
   <div
@@ -371,6 +438,12 @@
           feedbackMessageLabel: 'Your feedback',
           feedbackMessagePlaceholder: 'How is the color picker? Any suggestions?',
           feedbackSubmitBtn: 'Submit feedback',
+          footerAboutTitle: 'About Us',
+          footerAboutBody: 'ColorDrop is a free online color picker. Use the color wheel, presets, or HEX input, preview instantly, and copy HEX/RGB for your projects — simple, fast, and friendly.',
+          footerPrivacyTitle: 'Privacy Policy',
+          footerPrivacyBody: 'The picker runs in your browser; we do not collect personal data for normal use. If you submit the feedback form, we only use it to improve the service. We do not sell your information and do not use invasive tracking.',
+          footerContactTitle: 'Contact',
+          footerContactBody: 'Email: <a href="mailto:1228544374@qq.com" class="text-brand-600 hover:text-brand-700 underline break-all">1228544374@qq.com</a>',
         },
       },
       'zh-CN': {
@@ -405,6 +478,12 @@
           feedbackMessageLabel: '你的建议或反馈',
           feedbackMessagePlaceholder: '取色器好用吗？有什么建议？',
           feedbackSubmitBtn: '提交反馈',
+          footerAboutTitle: '关于我们',
+          footerAboutBody: 'ColorDrop 是一款免费在线取色工具。支持色轮选色、预设色板与 HEX 输入，实时预览并一键复制颜色值，简洁好用，助您轻松完成设计取色。',
+          footerPrivacyTitle: '隐私政策',
+          footerPrivacyBody: '取色功能在您的浏览器本地运行，正常使用不会收集个人隐私。仅在您主动提交反馈表单时，我们会使用该信息改进服务，不会出售您的数据，也不进行侵入式追踪。',
+          footerContactTitle: '联系方式',
+          footerContactBody: '邮箱：<a href="mailto:1228544374@qq.com" class="text-brand-600 hover:text-brand-700 underline break-all">1228544374@qq.com</a>',
         },
       },
       'zh-TW': {
@@ -439,6 +518,12 @@
           feedbackMessageLabel: '你的建議或回饋',
           feedbackMessagePlaceholder: '取色器好用嗎？有什麼建議？',
           feedbackSubmitBtn: '提交回饋',
+          footerAboutTitle: '關於我們',
+          footerAboutBody: 'ColorDrop 是一款免費線上取色工具。支援色輪選色、預設色板與 HEX 輸入，即時預覽並一鍵複製顏色值，簡潔好用。',
+          footerPrivacyTitle: '隱私政策',
+          footerPrivacyBody: '取色功能在您的瀏覽器本地運行，正常使用不會收集個人隱私。僅在您主動提交回饋表單時，我們會用於改進服務，不會出售您的資料，也不進行侵入式追蹤。',
+          footerContactTitle: '聯絡方式',
+          footerContactBody: '信箱：<a href="mailto:1228544374@qq.com" class="text-brand-600 hover:text-brand-700 underline break-all">1228544374@qq.com</a>',
         },
       },
       'ja': {
@@ -473,6 +558,12 @@
           feedbackMessageLabel: 'ご意見・フィードバック',
           feedbackMessagePlaceholder: 'カラーピッカーは使いやすいですか？ご提案は？',
           feedbackSubmitBtn: 'フィードバックを送信',
+          footerAboutTitle: '私たちについて',
+          footerAboutBody: 'ColorDrop は無料のオンラインカラーピッカーです。カラーホイール、プリセット、HEX 入力で色を選び、プレビューして HEX/RGB をコピーできます。シンプルで使いやすいツールです。',
+          footerPrivacyTitle: 'プライバシーポリシー',
+          footerPrivacyBody: 'ピッカーはブラウザ内で動作し、通常利用時に個人データは収集しません。フィードバック送信時のみサービス改善に利用し、情報の販売や侵入的な追跡は行いません。',
+          footerContactTitle: 'お問い合わせ',
+          footerContactBody: 'メール：<a href="mailto:1228544374@qq.com" class="text-brand-600 hover:text-brand-700 underline break-all">1228544374@qq.com</a>',
         },
       },
       'ko': {
@@ -507,6 +598,12 @@
           feedbackMessageLabel: '의견 또는 피드백',
           feedbackMessagePlaceholder: '색상 선택기가 마음에 드시나요? 제안이 있으신가요?',
           feedbackSubmitBtn: '피드백 제출',
+          footerAboutTitle: '소개',
+          footerAboutBody: 'ColorDrop은 무료 온라인 색상 선택 도구입니다. 색상환, 프리셋, HEX 입력으로 색을 고르고 미리 본 뒤 HEX/RGB를 복사할 수 있습니다. 간단하고 친근합니다.',
+          footerPrivacyTitle: '개인정보 처리방침',
+          footerPrivacyBody: '선택기는 브라우저에서 실행되며 일반 사용 시 개인정보를 수집하지 않습니다. 피드백 제출 시에만 서비스 개선에 사용하며, 정보를 판매하거나 침입적 추적을 하지 않습니다.',
+          footerContactTitle: '연락처',
+          footerContactBody: '이메일: <a href="mailto:1228544374@qq.com" class="text-brand-600 hover:text-brand-700 underline break-all">1228544374@qq.com</a>',
         },
       },
       'fr': {
@@ -541,6 +638,12 @@
           feedbackMessageLabel: 'Vos commentaires',
           feedbackMessagePlaceholder: 'Le sélecteur de couleurs vous convient-il ? Des suggestions ?',
           feedbackSubmitBtn: 'Envoyer',
+          footerAboutTitle: 'À propos',
+          footerAboutBody: 'ColorDrop est un sélecteur de couleurs en ligne gratuit. Roue chromatique, palettes et HEX : prévisualisez et copiez les valeurs pour vos projets, simplement.',
+          footerPrivacyTitle: 'Politique de confidentialité',
+          footerPrivacyBody: 'L\'outil fonctionne dans votre navigateur ; aucune donnée personnelle n\'est collectée en usage normal. Les retours du formulaire servent uniquement à améliorer le service. Nous ne vendons pas vos informations ni ne pratiquons de suivi intrusif.',
+          footerContactTitle: 'Contact',
+          footerContactBody: 'E-mail : <a href="mailto:1228544374@qq.com" class="text-brand-600 hover:text-brand-700 underline break-all">1228544374@qq.com</a>',
         },
       },
       'de': {
@@ -575,6 +678,12 @@
           feedbackMessageLabel: 'Ihr Feedback',
           feedbackMessagePlaceholder: 'Wie gefällt Ihnen der Farbwähler? Vorschläge?',
           feedbackSubmitBtn: 'Feedback senden',
+          footerAboutTitle: 'Über uns',
+          footerAboutBody: 'ColorDrop ist ein kostenloser Online-Farbwähler. Farbrad, Presets oder HEX – sofortige Vorschau und Kopieren von HEX/RGB für Ihre Projekte, einfach und freundlich.',
+          footerPrivacyTitle: 'Datenschutz',
+          footerPrivacyBody: 'Der Wähler läuft im Browser; bei normaler Nutzung werden keine personenbezogenen Daten erhoben. Feedback nutzen wir nur zur Verbesserung. Wir verkaufen keine Daten und nutzen kein invasives Tracking.',
+          footerContactTitle: 'Kontakt',
+          footerContactBody: 'E-Mail: <a href="mailto:1228544374@qq.com" class="text-brand-600 hover:text-brand-700 underline break-all">1228544374@qq.com</a>',
         },
       },
       'es': {
@@ -609,6 +718,12 @@
           feedbackMessageLabel: 'Tus comentarios',
           feedbackMessagePlaceholder: '¿Te gusta el selector de color? ¿Alguna sugerencia?',
           feedbackSubmitBtn: 'Enviar comentarios',
+          footerAboutTitle: 'Sobre nosotros',
+          footerAboutBody: 'ColorDrop es un selector de color en línea gratuito. Rueda, presets o HEX: previsualiza y copia valores para tus proyectos de forma sencilla.',
+          footerPrivacyTitle: 'Política de privacidad',
+          footerPrivacyBody: 'La herramienta funciona en tu navegador; no recopilamos datos personales en el uso normal. El formulario de comentarios solo mejora el servicio. No vendemos tu información ni usamos seguimiento invasivo.',
+          footerContactTitle: 'Contacto',
+          footerContactBody: 'Correo: <a href="mailto:1228544374@qq.com" class="text-brand-600 hover:text-brand-700 underline break-all">1228544374@qq.com</a>',
         },
       },
       'pt': {
@@ -643,6 +758,12 @@
           feedbackMessageLabel: 'Seu feedback',
           feedbackMessagePlaceholder: 'O seletor de cores é útil? Alguma sugestão?',
           feedbackSubmitBtn: 'Enviar feedback',
+          footerAboutTitle: 'Sobre nós',
+          footerAboutBody: 'ColorDrop é um seletor de cores online gratuito. Roda, presets ou HEX: visualize e copie valores para seus projetos de forma simples.',
+          footerPrivacyTitle: 'Política de privacidade',
+          footerPrivacyBody: 'A ferramenta roda no navegador; não coletamos dados pessoais no uso normal. O formulário de feedback só melhora o serviço. Não vendemos suas informações nem usamos rastreamento invasivo.',
+          footerContactTitle: 'Contato',
+          footerContactBody: 'E-mail: <a href="mailto:1228544374@qq.com" class="text-brand-600 hover:text-brand-700 underline break-all">1228544374@qq.com</a>',
         },
       },
       'ru': {
@@ -677,6 +798,12 @@
           feedbackMessageLabel: 'Ваш отзыв',
           feedbackMessagePlaceholder: 'Нравится ли выбор цвета? Есть предложения?',
           feedbackSubmitBtn: 'Отправить отзыв',
+          footerAboutTitle: 'О нас',
+          footerAboutBody: 'ColorDrop — бесплатный онлайн-инструмент выбора цвета. Колесо, палитры или HEX: мгновенный предпросмотр и копирование значений для ваших проектов.',
+          footerPrivacyTitle: 'Политика конфиденциальности',
+          footerPrivacyBody: 'Инструмент работает в браузере; при обычном использовании личные данные не собираются. Отзывы из формы используются только для улучшения сервиса. Мы не продаём данные и не используем навязчивое отслеживание.',
+          footerContactTitle: 'Контакты',
+          footerContactBody: 'Email: <a href="mailto:1228544374@qq.com" class="text-brand-600 hover:text-brand-700 underline break-all">1228544374@qq.com</a>',
         },
       },
       'ar': {
@@ -711,6 +838,12 @@
           feedbackMessageLabel: 'ملاحظاتك',
           feedbackMessagePlaceholder: 'هل أداة اختيار الألوان مفيدة؟ أي اقتراحات؟',
           feedbackSubmitBtn: 'إرسال الملاحظات',
+          footerAboutTitle: 'من نحن',
+          footerAboutBody: 'ColorDrop أداة مجانية عبر الإنترنت لاختيار الألوان. عجلة الألوان واللوحات وHEX: معاينة فورية ونسخ القيم لمشاريعك ببساطة.',
+          footerPrivacyTitle: 'سياسة الخصوصية',
+          footerPrivacyBody: 'تعمل الأداة في متصفحك؛ لا نجمع بيانات شخصية عند الاستخدام العادي. نستخدم نموذج الملاحظات فقط لتحسين الخدمة. لا نبيع معلوماتك ولا نستخدم تتبعًا تدخليًا.',
+          footerContactTitle: 'اتصل بنا',
+          footerContactBody: 'البريد: <a href="mailto:1228544374@qq.com" class="text-brand-600 hover:text-brand-700 underline break-all">1228544374@qq.com</a>',
         },
       },
       'hi': {
@@ -745,6 +878,12 @@
           feedbackMessageLabel: 'आपकी प्रतिक्रिया',
           feedbackMessagePlaceholder: 'कलर पिकर कैसा है? कोई सुझाव?',
           feedbackSubmitBtn: 'प्रतिक्रिया भेजें',
+          footerAboutTitle: 'हमारे बारे में',
+          footerAboutBody: 'ColorDrop एक मुफ्त ऑनलाइन रंग चयनकर्ता है। पहिया, प्रीसेट या HEX से रंग चुनें, पूर्वावलोकन करें और मान कॉपी करें — सरल और मित्रतापूर्ण।',
+          footerPrivacyTitle: 'गोपनीयता नीति',
+          footerPrivacyBody: 'टूल आपके ब्राउज़र में चलता है; सामान्य उपयोग में व्यक्तिगत डेटा एकत्र नहीं होता। फीडबैक फॉर्म केवल सेवा सुधार के लिए है। हम आपकी जानकारी नहीं बेचते और invasive ट्रैकिंग नहीं करते।',
+          footerContactTitle: 'संपर्क',
+          footerContactBody: 'ईमेल: <a href="mailto:1228544374@qq.com" class="text-brand-600 hover:text-brand-700 underline break-all">1228544374@qq.com</a>',
         },
       },
       'it': {
@@ -779,6 +918,12 @@
           feedbackMessageLabel: 'Il tuo feedback',
           feedbackMessagePlaceholder: 'Ti piace il selettore colori? Suggerimenti?',
           feedbackSubmitBtn: 'Invia feedback',
+          footerAboutTitle: 'Chi siamo',
+          footerAboutBody: 'ColorDrop è un selettore colore online gratuito. Ruota, preset o HEX: anteprima istantanea e copia dei valori per i tuoi progetti, in modo semplice.',
+          footerPrivacyTitle: 'Privacy',
+          footerPrivacyBody: 'Lo strumento funziona nel browser; non raccogliamo dati personali nell\'uso normale. Il feedback serve solo a migliorare il servizio. Non vendiamo le tue informazioni né usiamo tracciamento invasivo.',
+          footerContactTitle: 'Contatti',
+          footerContactBody: 'Email: <a href="mailto:1228544374@qq.com" class="text-brand-600 hover:text-brand-700 underline break-all">1228544374@qq.com</a>',
         },
       },
       'nl': {
@@ -813,6 +958,12 @@
           feedbackMessageLabel: 'Je feedback',
           feedbackMessagePlaceholder: 'Bevalt de kleurenkiezer? Suggesties?',
           feedbackSubmitBtn: 'Feedback verzenden',
+          footerAboutTitle: 'Over ons',
+          footerAboutBody: 'ColorDrop is een gratis online kleurenkiezer. Kleurenwiel, presets of HEX: direct voorbeeld en kopiëren voor je projecten, eenvoudig en vriendelijk.',
+          footerPrivacyTitle: 'Privacybeleid',
+          footerPrivacyBody: 'De kiezer draait in je browser; bij normaal gebruik verzamelen we geen persoonsgegevens. Feedback gebruiken we alleen om de dienst te verbeteren. We verkopen je gegevens niet en gebruiken geen invasieve tracking.',
+          footerContactTitle: 'Contact',
+          footerContactBody: 'E-mail: <a href="mailto:1228544374@qq.com" class="text-brand-600 hover:text-brand-700 underline break-all">1228544374@qq.com</a>',
         },
       },
       'tr': {
@@ -847,6 +998,12 @@
           feedbackMessageLabel: 'Geri bildiriminiz',
           feedbackMessagePlaceholder: 'Renk seçici işinize yarıyor mu? Önerileriniz?',
           feedbackSubmitBtn: 'Geri bildirim gönder',
+          footerAboutTitle: 'Hakkımızda',
+          footerAboutBody: 'ColorDrop ücretsiz bir çevrimiçi renk seçicidir. Renk çarkı, hazır paletler veya HEX ile renk seçin, önizleyin ve değerleri kopyalayın — basit ve kullanıcı dostu.',
+          footerPrivacyTitle: 'Gizlilik Politikası',
+          footerPrivacyBody: 'Araç tarayıcınızda çalışır; normal kullanımda kişisel veri toplanmaz. Geri bildirim yalnızca hizmeti geliştirmek içindir. Bilgilerinizi satmayız ve müdahaleci izleme kullanmayız.',
+          footerContactTitle: 'İletişim',
+          footerContactBody: 'E-posta: <a href="mailto:1228544374@qq.com" class="text-brand-600 hover:text-brand-700 underline break-all">1228544374@qq.com</a>',
         },
       },
       'th': {
@@ -881,6 +1038,12 @@
           feedbackMessageLabel: 'ข้อเสนอแนะของคุณ',
           feedbackMessagePlaceholder: 'เครื่องมือเลือกสีใช้งานดีไหม? มีข้อเสนอแนะไหม?',
           feedbackSubmitBtn: 'ส่งข้อเสนอแนะ',
+          footerAboutTitle: 'เกี่ยวกับเรา',
+          footerAboutBody: 'ColorDrop เป็นเครื่องมือเลือกสีออนไลน์ฟรี ใช้วงล้อสี พาเลท หรือ HEX ดูตัวอย่างและคัดลอกค่าสีได้ทันที เรียบง่ายและเป็นมิตร',
+          footerPrivacyTitle: 'นโยบายความเป็นส่วนตัว',
+          footerPrivacyBody: 'เครื่องมือทำงานในเบราว์เซอร์ ไม่เก็บข้อมูลส่วนตัวจากการใช้งานทั่วไป แบบฟอร์มข้อเสนอแนะใช้เพื่อปรับปรุงบริการเท่านั้น เราไม่ขายข้อมูลและไม่ติดตามแบบรุกราน',
+          footerContactTitle: 'ติดต่อ',
+          footerContactBody: 'อีเมล: <a href="mailto:1228544374@qq.com" class="text-brand-600 hover:text-brand-700 underline break-all">1228544374@qq.com</a>',
         },
       },
       'vi': {
@@ -915,6 +1078,12 @@
           feedbackMessageLabel: 'Phản hồi của bạn',
           feedbackMessagePlaceholder: 'Công cụ chọn màu có hữu ích không? Góp ý nào không?',
           feedbackSubmitBtn: 'Gửi phản hồi',
+          footerAboutTitle: 'Về chúng tôi',
+          footerAboutBody: 'ColorDrop là công cụ chọn màu trực tuyến miễn phí. Bánh xe màu, bảng màu hoặc HEX: xem trước và sao chép giá trị cho dự án của bạn, đơn giản và thân thiện.',
+          footerPrivacyTitle: 'Chính sách bảo mật',
+          footerPrivacyBody: 'Công cụ chạy trên trình duyệt; không thu thập dữ liệu cá nhân khi dùng bình thường. Phản hồi chỉ dùng để cải thiện dịch vụ. Chúng tôi không bán thông tin và không theo dõi xâm phạm.',
+          footerContactTitle: 'Liên hệ',
+          footerContactBody: 'Email: <a href="mailto:1228544374@qq.com" class="text-brand-600 hover:text-brand-700 underline break-all">1228544374@qq.com</a>',
         },
       },
       'id': {
@@ -949,6 +1118,12 @@
           feedbackMessageLabel: 'Masukan Anda',
           feedbackMessagePlaceholder: 'Apakah pemilih warna berguna? Ada saran?',
           feedbackSubmitBtn: 'Kirim masukan',
+          footerAboutTitle: 'Tentang kami',
+          footerAboutBody: 'ColorDrop adalah pemilih warna online gratis. Roda warna, preset, atau HEX: pratinjau instan dan salin nilai untuk proyek Anda — sederhana dan ramah.',
+          footerPrivacyTitle: 'Kebijakan privasi',
+          footerPrivacyBody: 'Alat berjalan di browser; kami tidak mengumpulkan data pribadi untuk penggunaan normal. Masukan formulir hanya untuk meningkatkan layanan. Kami tidak menjual informasi Anda dan tidak melakukan pelacakan invasif.',
+          footerContactTitle: 'Kontak',
+          footerContactBody: 'Email: <a href="mailto:1228544374@qq.com" class="text-brand-600 hover:text-brand-700 underline break-all">1228544374@qq.com</a>',
         },
       },
     };
@@ -1241,11 +1416,38 @@
       });
     }
 
+    /** 页脚手风琴：点击展开/折叠 */
+    function initFooterAccordion() {
+      const triggers = document.querySelectorAll('.accordion-trigger');
+
+      triggers.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const panel = document.getElementById(btn.getAttribute('aria-controls'));
+          const icon = btn.querySelector('.accordion-icon');
+          const isOpen = btn.getAttribute('aria-expanded') === 'true';
+
+          triggers.forEach((other) => {
+            const otherPanel = document.getElementById(other.getAttribute('aria-controls'));
+            other.setAttribute('aria-expanded', 'false');
+            otherPanel?.classList.add('hidden');
+            other.querySelector('.accordion-icon')?.classList.remove('is-open');
+          });
+
+          if (!isOpen && panel) {
+            panel.classList.remove('hidden');
+            btn.setAttribute('aria-expanded', 'true');
+            icon?.classList.add('is-open');
+          }
+        });
+      });
+    }
+
     function init() {
       currentLocale = detectInitialLocale();
       initLangSelect();
       initPresetPalette();
       bindEvents();
+      initFooterAccordion();
       applyI18n();
       setColor(currentColor);
     }
